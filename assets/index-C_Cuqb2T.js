@@ -19,7 +19,6 @@ Error generating stack: `+e.message+`
     padding-bottom: 80px;
   }
 
-  /* HEADER */
   .hdr {
     background: #0f0e0c;
     border-bottom: 2px solid #c8a44a;
@@ -47,10 +46,8 @@ Error generating stack: `+e.message+`
     margin-top: 2px;
   }
 
-  /* MAIN */
   .main { max-width: 980px; margin: 0 auto; padding: 28px 18px 0; }
 
-  /* CARD */
   .card {
     background: #18160f;
     border: 1px solid #2a2520;
@@ -59,7 +56,6 @@ Error generating stack: `+e.message+`
     margin-bottom: 22px;
   }
 
-  /* STEP HEADER */
   .step-hdr { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
   .step-num {
     width: 28px; height: 28px;
@@ -74,7 +70,6 @@ Error generating stack: `+e.message+`
   .step-title { font-size: 14px; font-weight: 600; color: #f0ebe0; }
   .step-sub { font-size: 11px; color: #7a6f5e; margin-top: 2px; }
 
-  /* API KEY */
   .api-input {
     width: 100%;
     background: #0f0e0c;
@@ -91,7 +86,6 @@ Error generating stack: `+e.message+`
   .api-hint { font-size: 11px; color: #7a6f5e; margin-top: 7px; }
   .api-saved { font-size: 11px; color: #c8a44a; margin-top: 7px; }
 
-  /* CATEGORIES */
   .cats { display: flex; flex-wrap: wrap; gap: 9px; }
   .cat {
     padding: 8px 16px;
@@ -108,7 +102,6 @@ Error generating stack: `+e.message+`
   .cat:hover { border-color: #c8a44a; color: #c8a44a; background: rgba(200,164,74,0.08); }
   .cat.on { border-color: #c8a44a; color: #c8a44a; background: rgba(200,164,74,0.15); font-weight: 600; }
 
-  /* HEADLINES */
   .headlines { display: flex; flex-direction: column; gap: 9px; }
   .hl-btn {
     text-align: left;
@@ -128,7 +121,6 @@ Error generating stack: `+e.message+`
   .hl-btn.on { border-color: #c8a44a; background: rgba(200,164,74,0.1); color: #c8a44a; }
   .hl-num { color: #c8a44a; font-weight: 700; flex-shrink: 0; font-size: 12px; margin-top: 1px; }
 
-  /* POSTS GRID */
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
@@ -172,7 +164,6 @@ Error generating stack: `+e.message+`
   }
   .pta:focus { border-color: #c8a44a; }
 
-  /* BUTTONS ROW */
   .btn-row { display: flex; gap: 8px; }
   .copy-btn {
     flex: 1;
@@ -203,7 +194,6 @@ Error generating stack: `+e.message+`
   .regen-btn:hover:not(:disabled) { border-color: #c8a44a; color: #c8a44a; }
   .regen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  /* LOADING */
   .loading { color: #c8a44a; font-size: 13px; display: flex; align-items: center; gap: 8px; }
   .spinner {
     width: 14px; height: 14px;
@@ -215,7 +205,6 @@ Error generating stack: `+e.message+`
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ERROR */
   .err-box {
     background: rgba(231,76,60,0.1);
     border: 1px solid #e74c3c;
@@ -226,17 +215,25 @@ Error generating stack: `+e.message+`
     margin-top: 16px;
   }
 
-  /* DIVIDER */
   .divider { border: none; border-top: 1px solid #2a2520; margin: 4px 0 20px; }
 
-  /* WATERMARK */
   .wm {
     display: flex; align-items: center; gap: 6px;
     font-size: 10px; color: #7a6f5e;
     letter-spacing: 1px; text-transform: uppercase;
   }
 
-  /* MOBILE */
+  .gemini-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(66,133,244,0.1);
+    border: 1px solid rgba(66,133,244,0.3);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 10px;
+    color: #4285f4;
+    margin-top: 8px;
+  }
+
   @media (max-width: 600px) {
     .hdr { padding: 12px 16px; }
     .hdr-title { font-size: 16px; }
@@ -245,11 +242,11 @@ Error generating stack: `+e.message+`
     .grid { grid-template-columns: 1fr; }
     .cat { font-size: 12px; padding: 6px 12px; }
   }
-`;function g(){let[e,t]=(0,l.useState)(``),[n,r]=(0,l.useState)(!1),[i,a]=(0,l.useState)(null),[o,s]=(0,l.useState)([]),[c,u]=(0,l.useState)(null),[d,g]=(0,l.useState)({}),[_,v]=(0,l.useState)(!1),[y,b]=(0,l.useState)(!1),[x,ee]=(0,l.useState)({}),[S,C]=(0,l.useState)({}),[te,ne]=(0,l.useState)(``);(0,l.useEffect)(()=>{let e=localStorage.getItem(`dnu_api_key`);e&&(t(e),r(!0))},[]);function re(e){t(e),e.length>10?(localStorage.setItem(`dnu_api_key`,e),r(!0)):(localStorage.removeItem(`dnu_api_key`),r(!1))}async function w(t){let n=await(await fetch(`https://api.anthropic.com/v1/messages`,{method:`POST`,headers:{"Content-Type":`application/json`,"x-api-key":e,"anthropic-version":`2023-06-01`,"anthropic-dangerous-direct-browser-access":`true`},body:JSON.stringify({model:`claude-sonnet-4-20250514`,max_tokens:1500,messages:[{role:`user`,content:t}]})})).json();if(n.error)throw Error(n.error.message);return n.content[0].text.replace(/```json|```/g,``).trim()}async function ie(t){if(!e){ne(`Please enter your Anthropic API key first!`);return}a(t),s([]),u(null),g({}),ne(``),v(!0);try{let e=await w(`You are a news editor for Daily News Uganda, a Ugandan news website.
+`;function g(){let[e,t]=(0,l.useState)(``),[n,r]=(0,l.useState)(!1),[i,a]=(0,l.useState)(null),[o,s]=(0,l.useState)([]),[c,u]=(0,l.useState)(null),[d,g]=(0,l.useState)({}),[_,v]=(0,l.useState)(!1),[y,b]=(0,l.useState)(!1),[x,ee]=(0,l.useState)({}),[S,C]=(0,l.useState)({}),[te,ne]=(0,l.useState)(``);(0,l.useEffect)(()=>{let e=localStorage.getItem(`dnu_gemini_key`);e&&(t(e),r(!0))},[]);function re(e){t(e),e.length>10?(localStorage.setItem(`dnu_gemini_key`,e),r(!0)):(localStorage.removeItem(`dnu_gemini_key`),r(!1))}async function w(t){let n=await(await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${e}`,{method:`POST`,headers:{"Content-Type":`application/json`},body:JSON.stringify({contents:[{parts:[{text:t}]}],generationConfig:{temperature:.8,maxOutputTokens:1500}})})).json();if(n.error)throw Error(n.error.message);return n.candidates[0].content.parts[0].text.replace(/```json|```/g,``).trim()}async function ie(t){if(!e){ne(`Please enter your Gemini API key first!`);return}a(t),s([]),u(null),g({}),ne(``),v(!0);try{let e=await w(`You are a news editor for Daily News Uganda, a Ugandan news website.
 Generate exactly 10 realistic, current-sounding news headlines for the category: ${t}.
 Headlines must be relevant to Uganda and East Africa.
 Return ONLY a JSON array of 10 strings. No explanation, no numbering, no markdown.
-Example: ["Headline one", "Headline two", ...]`);g({}),s(JSON.parse(e))}catch{ne(`Could not load headlines. Check your API key and try again.`)}v(!1)}async function ae(e){u(e),g({}),ne(``),b(!0);try{let t=await w(`You are a social media manager for Daily News Uganda.
+Example: ["Headline one", "Headline two", ...]`);s(JSON.parse(e))}catch(e){ne(`Could not load headlines. Check your Gemini API key and try again. Error: `+e.message)}v(!1)}async function ae(e){u(e),g({}),ne(``),b(!0);try{let t=await w(`You are a social media manager for Daily News Uganda.
 Write social media posts for this headline: "${e}"
 Return ONLY a JSON object with exactly these 4 keys:
 {
@@ -258,7 +255,7 @@ Return ONLY a JSON object with exactly these 4 keys:
   "whatsapp": "WhatsApp message under 680 chars, conversational tone",
   "instagram": "Instagram caption under 480 chars with emojis and hashtags"
 }
-No explanation. Only the JSON object.`);g(JSON.parse(t))}catch{ne(`Could not generate posts. Please try again.`)}b(!1)}async function oe(e){if(c){ee(t=>({...t,[e]:!0})),ne(``);try{let t=await w(`You are a social media manager for Daily News Uganda.
+No explanation. Only the JSON object.`);g(JSON.parse(t))}catch(e){ne(`Could not generate posts. Please try again. Error: `+e.message)}b(!1)}async function oe(e){if(c){ee(t=>({...t,[e]:!0})),ne(``);try{let t=await w(`You are a social media manager for Daily News Uganda.
 Write a DIFFERENT version of a ${e} post for this headline: "${c}"
 Return ONLY a JSON object with one key: { "${e}": "your post here" }
-No explanation. Only the JSON.`),n=JSON.parse(t);g(t=>({...t,[e]:n[e]}))}catch{ne(`Could not regenerate. Please try again.`)}ee(t=>({...t,[e]:!1}))}}function se(e,t){navigator.clipboard.writeText(t),C(t=>({...t,[e]:!0})),setTimeout(()=>C(t=>({...t,[e]:!1})),2e3)}let ce=Object.keys(d).length>0;return(0,f.jsxs)(f.Fragment,{children:[(0,f.jsx)(`style`,{children:h}),(0,f.jsxs)(`div`,{className:`app`,children:[(0,f.jsxs)(`div`,{className:`hdr`,children:[(0,f.jsx)(`div`,{className:`hdr-icon`,children:`📰`}),(0,f.jsxs)(`div`,{children:[(0,f.jsx)(`div`,{className:`hdr-title`,children:`Daily News Uganda`}),(0,f.jsx)(`div`,{className:`hdr-sub`,children:`Social Media Post Generator`})]})]}),(0,f.jsxs)(`div`,{className:`main`,children:[(0,f.jsxs)(`div`,{className:`card`,children:[(0,f.jsxs)(`div`,{className:`step-hdr`,children:[(0,f.jsx)(`div`,{className:`step-num`,children:`🔑`}),(0,f.jsxs)(`div`,{children:[(0,f.jsx)(`div`,{className:`step-title`,children:`Your Anthropic API Key`}),(0,f.jsx)(`div`,{className:`step-sub`,children:`Saved automatically in your browser`})]})]}),(0,f.jsx)(`input`,{className:`api-input`,type:`password`,placeholder:`Paste your API key here — sk-ant-...`,value:e,onChange:e=>re(e.target.value)}),n?(0,f.jsx)(`div`,{className:`api-saved`,children:`✓ Key saved in your browser — you won't need to paste it again`}):(0,f.jsx)(`div`,{className:`api-hint`,children:`Your key is never shared. It's stored only in this browser.`})]}),(0,f.jsxs)(`div`,{className:`card`,children:[(0,f.jsxs)(`div`,{className:`step-hdr`,children:[(0,f.jsx)(`div`,{className:`step-num`,children:`1`}),(0,f.jsxs)(`div`,{children:[(0,f.jsx)(`div`,{className:`step-title`,children:`Choose a Category`}),(0,f.jsx)(`div`,{className:`step-sub`,children:`AI will generate 10 Uganda-focused headlines for you`})]})]}),(0,f.jsx)(`div`,{className:`cats`,children:m.map(e=>(0,f.jsxs)(`button`,{className:`cat${i===e.id?` on`:``}`,onClick:()=>ie(e.id),disabled:_,children:[e.emoji,` `,e.id]},e.id))}),_&&(0,f.jsxs)(`div`,{className:`loading`,style:{marginTop:16},children:[(0,f.jsx)(`div`,{className:`spinner`}),` Generating headlines...`]})]}),o.length>0&&(0,f.jsxs)(`div`,{className:`card`,children:[(0,f.jsxs)(`div`,{className:`step-hdr`,children:[(0,f.jsx)(`div`,{className:`step-num`,children:`2`}),(0,f.jsxs)(`div`,{children:[(0,f.jsx)(`div`,{className:`step-title`,children:`Pick a Headline`}),(0,f.jsx)(`div`,{className:`step-sub`,children:`Click any headline to generate posts for all 4 platforms`})]})]}),(0,f.jsx)(`div`,{className:`headlines`,children:o.map((e,t)=>(0,f.jsxs)(`button`,{className:`hl-btn${c===e?` on`:``}`,onClick:()=>ae(e),disabled:y,children:[(0,f.jsxs)(`span`,{className:`hl-num`,children:[t+1,`.`]}),e]},t))})]}),(y||ce)&&(0,f.jsxs)(`div`,{className:`card`,children:[(0,f.jsxs)(`div`,{className:`step-hdr`,children:[(0,f.jsx)(`div`,{className:`step-num`,children:`3`}),(0,f.jsxs)(`div`,{children:[(0,f.jsx)(`div`,{className:`step-title`,children:`Your Generated Posts`}),(0,f.jsx)(`div`,{className:`step-sub`,children:`Edit if needed · Use ↻ to get a fresh version of any post`})]})]}),(0,f.jsx)(`hr`,{className:`divider`}),y?(0,f.jsxs)(`div`,{className:`loading`,children:[(0,f.jsx)(`div`,{className:`spinner`}),` Writing posts for all 4 platforms...`]}):(0,f.jsx)(`div`,{className:`grid`,children:p.map(e=>{let t=d[e.id]||``,n=t.length>e.limit;return(0,f.jsxs)(`div`,{className:`pcard`,children:[(0,f.jsxs)(`div`,{className:`pcard-hdr`,children:[(0,f.jsx)(`div`,{className:`picon`,style:{background:e.bg},children:e.icon}),(0,f.jsx)(`span`,{className:`pname`,children:e.name}),(0,f.jsxs)(`span`,{className:`pcount${n?` over`:``}`,children:[t.length,`/`,e.limit]})]}),(0,f.jsx)(`textarea`,{className:`pta`,value:t,rows:7,onChange:t=>g(n=>({...n,[e.id]:t.target.value}))}),(0,f.jsxs)(`div`,{className:`wm`,children:[(0,f.jsx)(`span`,{children:`📰`}),(0,f.jsx)(`span`,{children:`Daily News Uganda`})]}),(0,f.jsxs)(`div`,{className:`btn-row`,children:[(0,f.jsx)(`button`,{className:`copy-btn${S[e.id]?` ok`:``}`,onClick:()=>se(e.id,t),children:S[e.id]?`✓ Copied!`:`Copy ${e.label}`}),(0,f.jsx)(`button`,{className:`regen-btn`,onClick:()=>oe(e.id),disabled:x[e.id],title:`Get a different version`,children:x[e.id]?(0,f.jsx)(`span`,{className:`spinner`}):`↻`})]})]},e.id)})})]}),te&&(0,f.jsxs)(`div`,{className:`err-box`,children:[`⚠ `,te]})]})]})]})}(0,u.createRoot)(document.getElementById(`root`)).render((0,f.jsx)(l.StrictMode,{children:(0,f.jsx)(g,{})}));
+No explanation. Only the JSON.`),n=JSON.parse(t);g(t=>({...t,[e]:n[e]}))}catch{ne(`Could not regenerate. Please try again.`)}ee(t=>({...t,[e]:!1}))}}function se(e,t){navigator.clipboard.writeText(t),C(t=>({...t,[e]:!0})),setTimeout(()=>C(t=>({...t,[e]:!1})),2e3)}let ce=Object.keys(d).length>0;return(0,f.jsxs)(f.Fragment,{children:[(0,f.jsx)(`style`,{children:h}),(0,f.jsxs)(`div`,{className:`app`,children:[(0,f.jsxs)(`div`,{className:`hdr`,children:[(0,f.jsx)(`div`,{className:`hdr-icon`,children:`📰`}),(0,f.jsxs)(`div`,{children:[(0,f.jsx)(`div`,{className:`hdr-title`,children:`Daily News Uganda`}),(0,f.jsx)(`div`,{className:`hdr-sub`,children:`Social Media Post Generator`})]})]}),(0,f.jsxs)(`div`,{className:`main`,children:[(0,f.jsxs)(`div`,{className:`card`,children:[(0,f.jsxs)(`div`,{className:`step-hdr`,children:[(0,f.jsx)(`div`,{className:`step-num`,children:`🔑`}),(0,f.jsxs)(`div`,{children:[(0,f.jsx)(`div`,{className:`step-title`,children:`Your Google Gemini API Key`}),(0,f.jsx)(`div`,{className:`step-sub`,children:`Free — get yours at aistudio.google.com`})]})]}),(0,f.jsx)(`input`,{className:`api-input`,type:`password`,placeholder:`Paste your Gemini API key here...`,value:e,onChange:e=>re(e.target.value)}),n?(0,f.jsx)(`div`,{className:`api-saved`,children:`✓ Key saved in your browser — no need to paste it again`}):(0,f.jsx)(`div`,{className:`api-hint`,children:`Your key is stored only in this browser. Never shared.`}),(0,f.jsx)(`div`,{className:`gemini-badge`,children:`⚡ Powered by Google Gemini 2.0 Flash — Free`})]}),(0,f.jsxs)(`div`,{className:`card`,children:[(0,f.jsxs)(`div`,{className:`step-hdr`,children:[(0,f.jsx)(`div`,{className:`step-num`,children:`1`}),(0,f.jsxs)(`div`,{children:[(0,f.jsx)(`div`,{className:`step-title`,children:`Choose a Category`}),(0,f.jsx)(`div`,{className:`step-sub`,children:`AI will generate 10 Uganda-focused headlines for you`})]})]}),(0,f.jsx)(`div`,{className:`cats`,children:m.map(e=>(0,f.jsxs)(`button`,{className:`cat${i===e.id?` on`:``}`,onClick:()=>ie(e.id),disabled:_,children:[e.emoji,` `,e.id]},e.id))}),_&&(0,f.jsxs)(`div`,{className:`loading`,style:{marginTop:16},children:[(0,f.jsx)(`div`,{className:`spinner`}),` Generating headlines...`]})]}),o.length>0&&(0,f.jsxs)(`div`,{className:`card`,children:[(0,f.jsxs)(`div`,{className:`step-hdr`,children:[(0,f.jsx)(`div`,{className:`step-num`,children:`2`}),(0,f.jsxs)(`div`,{children:[(0,f.jsx)(`div`,{className:`step-title`,children:`Pick a Headline`}),(0,f.jsx)(`div`,{className:`step-sub`,children:`Click any headline to generate posts for all 4 platforms`})]})]}),(0,f.jsx)(`div`,{className:`headlines`,children:o.map((e,t)=>(0,f.jsxs)(`button`,{className:`hl-btn${c===e?` on`:``}`,onClick:()=>ae(e),disabled:y,children:[(0,f.jsxs)(`span`,{className:`hl-num`,children:[t+1,`.`]}),e]},t))})]}),(y||ce)&&(0,f.jsxs)(`div`,{className:`card`,children:[(0,f.jsxs)(`div`,{className:`step-hdr`,children:[(0,f.jsx)(`div`,{className:`step-num`,children:`3`}),(0,f.jsxs)(`div`,{children:[(0,f.jsx)(`div`,{className:`step-title`,children:`Your Generated Posts`}),(0,f.jsx)(`div`,{className:`step-sub`,children:`Edit if needed · Use ↻ to get a fresh version of any post`})]})]}),(0,f.jsx)(`hr`,{className:`divider`}),y?(0,f.jsxs)(`div`,{className:`loading`,children:[(0,f.jsx)(`div`,{className:`spinner`}),` Writing posts for all 4 platforms...`]}):(0,f.jsx)(`div`,{className:`grid`,children:p.map(e=>{let t=d[e.id]||``,n=t.length>e.limit;return(0,f.jsxs)(`div`,{className:`pcard`,children:[(0,f.jsxs)(`div`,{className:`pcard-hdr`,children:[(0,f.jsx)(`div`,{className:`picon`,style:{background:e.bg},children:e.icon}),(0,f.jsx)(`span`,{className:`pname`,children:e.name}),(0,f.jsxs)(`span`,{className:`pcount${n?` over`:``}`,children:[t.length,`/`,e.limit]})]}),(0,f.jsx)(`textarea`,{className:`pta`,value:t,rows:7,onChange:t=>g(n=>({...n,[e.id]:t.target.value}))}),(0,f.jsxs)(`div`,{className:`wm`,children:[(0,f.jsx)(`span`,{children:`📰`}),(0,f.jsx)(`span`,{children:`Daily News Uganda`})]}),(0,f.jsxs)(`div`,{className:`btn-row`,children:[(0,f.jsx)(`button`,{className:`copy-btn${S[e.id]?` ok`:``}`,onClick:()=>se(e.id,t),children:S[e.id]?`✓ Copied!`:`Copy ${e.label}`}),(0,f.jsx)(`button`,{className:`regen-btn`,onClick:()=>oe(e.id),disabled:x[e.id],title:`Get a different version`,children:x[e.id]?(0,f.jsx)(`span`,{className:`spinner`}):`↻`})]})]},e.id)})})]}),te&&(0,f.jsxs)(`div`,{className:`err-box`,children:[`⚠ `,te]})]})]})]})}(0,u.createRoot)(document.getElementById(`root`)).render((0,f.jsx)(l.StrictMode,{children:(0,f.jsx)(g,{})}));
