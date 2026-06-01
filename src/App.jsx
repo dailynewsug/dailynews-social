@@ -82,7 +82,7 @@ const STYLES = `
 `;
 
 // The free Llama model on OpenRouter
-const MODEL = "meta-llama/llama-3.3-70b-instruct:free";
+const MODEL = "qwen/qwen3-235b-a22b:free";
 
 export default function App() {
   const [apiKey, setApiKey]             = useState("");
