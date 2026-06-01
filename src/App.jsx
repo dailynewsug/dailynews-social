@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const PLATFORMS = [
   { id: "twitter",   name: "Twitter/X",  icon: "𝕏", limit: 280,  label: "Tweet",   bg: "#000000" },
@@ -18,254 +18,538 @@ const CATEGORIES = [
   { id: "Opinion",     emoji: "✍️" },
 ];
 
-export default function App() {
-  const [category, setCategory] = useState(null);
-  const [headlines, setHeadlines] = useState([]);
-  const [selectedHeadline, setSelectedHeadline] = useState(null);
-  const [posts, setPosts] = useState({});
-  const [apiKey, setApiKey] = useState("");
-  const [loadingHeadlines, setLoadingHeadlines] = useState(false);
-  const [loadingPosts, setLoadingPosts] = useState(false);
-  const [copied, setCopied] = useState({});
-  const [error, setError] = useState("");
+const STYLES = `
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@300;400;600&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0f0e0c; }
 
-  // STEP 1: Fetch headlines from Claude AI for the chosen category
-  async function fetchHeadlines(cat) {
-    setCategory(cat);
-    setHeadlines([]);
-    setSelectedHeadline(null);
-    setPosts({});
-    setError("");
-    setLoadingHeadlines(true);
-
-    try {
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": apiKey,
-          "anthropic-version": "2023-06-01",
-          "anthropic-dangerous-direct-browser-access": "true",
-        },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          messages: [{
-            role: "user",
-            content: `You are a news editor for Daily News Uganda, a Ugandan news website. 
-Generate exactly 10 realistic, current-sounding news headlines for the category: ${cat}.
-The headlines should be relevant to Uganda and East Africa.
-Return ONLY a JSON array of 10 headline strings, nothing else. No explanation, no numbering.
-Example format: ["Headline one here", "Headline two here", ...]`
-          }]
-        })
-      });
-
-      const data = await response.json();
-      const text = data.content[0].text;
-      const clean = text.replace(/```json|```/g, "").trim();
-      const parsed = JSON.parse(clean);
-      setHeadlines(parsed);
-    } catch (err) {
-      setError("Could not load headlines. Check your API key and try again.");
-    }
-
-    setLoadingHeadlines(false);
+  .app {
+    min-height: 100vh;
+    background: #0f0e0c;
+    color: #f0ebe0;
+    font-family: 'Source Sans 3', sans-serif;
+    padding-bottom: 80px;
   }
 
-  // STEP 2: Generate social media posts for the selected headline
+  /* HEADER */
+  .hdr {
+    background: #0f0e0c;
+    border-bottom: 2px solid #c8a44a;
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 30;
+  }
+  .hdr-icon { font-size: 32px; }
+  .hdr-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 900;
+    color: #f0ebe0;
+    letter-spacing: -0.3px;
+  }
+  .hdr-sub {
+    font-size: 10px;
+    color: #c8a44a;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* MAIN */
+  .main { max-width: 980px; margin: 0 auto; padding: 28px 18px 0; }
+
+  /* CARD */
+  .card {
+    background: #18160f;
+    border: 1px solid #2a2520;
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 22px;
+  }
+
+  /* STEP HEADER */
+  .step-hdr { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: #c8a44a;
+    color: #0f0e0c;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .step-title { font-size: 14px; font-weight: 600; color: #f0ebe0; }
+  .step-sub { font-size: 11px; color: #7a6f5e; margin-top: 2px; }
+
+  /* API KEY */
+  .api-input {
+    width: 100%;
+    background: #0f0e0c;
+    border: 1px solid #2a2520;
+    border-radius: 8px;
+    padding: 11px 16px;
+    color: #f0ebe0;
+    font-size: 14px;
+    outline: none;
+    font-family: 'Source Sans 3', sans-serif;
+    transition: border-color 0.2s;
+  }
+  .api-input:focus { border-color: #c8a44a; }
+  .api-hint { font-size: 11px; color: #7a6f5e; margin-top: 7px; }
+  .api-saved { font-size: 11px; color: #c8a44a; margin-top: 7px; }
+
+  /* CATEGORIES */
+  .cats { display: flex; flex-wrap: wrap; gap: 9px; }
+  .cat {
+    padding: 8px 16px;
+    border-radius: 24px;
+    border: 1px solid #2a2520;
+    background: transparent;
+    color: #7a6f5e;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .cat:hover { border-color: #c8a44a; color: #c8a44a; background: rgba(200,164,74,0.08); }
+  .cat.on { border-color: #c8a44a; color: #c8a44a; background: rgba(200,164,74,0.15); font-weight: 600; }
+
+  /* HEADLINES */
+  .headlines { display: flex; flex-direction: column; gap: 9px; }
+  .hl-btn {
+    text-align: left;
+    padding: 13px 17px;
+    border-radius: 9px;
+    border: 1px solid #2a2520;
+    background: #0f0e0c;
+    color: #f0ebe0;
+    font-size: 13px;
+    font-family: 'Source Sans 3', sans-serif;
+    cursor: pointer;
+    line-height: 1.5;
+    transition: all 0.2s;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .hl-btn:hover { border-color: #c8a44a; color: #c8a44a; }
+  .hl-btn.on { border-color: #c8a44a; background: rgba(200,164,74,0.1); color: #c8a44a; }
+  .hl-num { color: #c8a44a; font-weight: 700; flex-shrink: 0; font-size: 12px; margin-top: 1px; }
+
+  /* POSTS GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap: 18px;
+  }
+  .pcard {
+    background: #0f0e0c;
+    border: 1px solid #2a2520;
+    border-radius: 12px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .pcard-hdr { display: flex; align-items: center; gap: 10px; }
+  .picon {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .pname { font-size: 13px; font-weight: 600; color: #f0ebe0; }
+  .pcount { margin-left: auto; font-size: 11px; color: #7a6f5e; }
+  .pcount.over { color: #e74c3c; }
+  .pta {
+    width: 100%;
+    background: #18160f;
+    border: 1px solid #2a2520;
+    border-radius: 8px;
+    padding: 11px;
+    color: #f0ebe0;
+    font-size: 12px;
+    resize: vertical;
+    outline: none;
+    font-family: 'Source Sans 3', sans-serif;
+    line-height: 1.6;
+    transition: border-color 0.2s;
+  }
+  .pta:focus { border-color: #c8a44a; }
+
+  /* BUTTONS ROW */
+  .btn-row { display: flex; gap: 8px; }
+  .copy-btn {
+    flex: 1;
+    padding: 9px;
+    border-radius: 7px;
+    border: 1px solid #c8a44a;
+    background: transparent;
+    color: #c8a44a;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: 'Source Sans 3', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .copy-btn:hover { background: rgba(200,164,74,0.15); }
+  .copy-btn.ok { background: #c8a44a; color: #0f0e0c; }
+  .regen-btn {
+    padding: 9px 13px;
+    border-radius: 7px;
+    border: 1px solid #2a2520;
+    background: transparent;
+    color: #7a6f5e;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Source Sans 3', sans-serif;
+  }
+  .regen-btn:hover:not(:disabled) { border-color: #c8a44a; color: #c8a44a; }
+  .regen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* LOADING */
+  .loading { color: #c8a44a; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid #2a2520;
+    border-top-color: #c8a44a;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ERROR */
+  .err-box {
+    background: rgba(231,76,60,0.1);
+    border: 1px solid #e74c3c;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #e74c3c;
+    margin-top: 16px;
+  }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 1px solid #2a2520; margin: 4px 0 20px; }
+
+  /* WATERMARK */
+  .wm {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 10px; color: #7a6f5e;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+
+  /* MOBILE */
+  @media (max-width: 600px) {
+    .hdr { padding: 12px 16px; }
+    .hdr-title { font-size: 16px; }
+    .main { padding: 16px 12px 0; }
+    .card { padding: 16px; }
+    .grid { grid-template-columns: 1fr; }
+    .cat { font-size: 12px; padding: 6px 12px; }
+  }
+`;
+
+export default function App() {
+  const [apiKey, setApiKey]                 = useState("");
+  const [keySaved, setKeySaved]             = useState(false);
+  const [category, setCategory]             = useState(null);
+  const [headlines, setHeadlines]           = useState([]);
+  const [selectedHL, setSelectedHL]         = useState(null);
+  const [posts, setPosts]                   = useState({});
+  const [loadingHL, setLoadingHL]           = useState(false);
+  const [loadingPosts, setLoadingPosts]     = useState(false);
+  const [regenLoading, setRegenLoading]     = useState({});
+  const [copied, setCopied]                 = useState({});
+  const [error, setError]                   = useState("");
+
+  // Load saved API key from browser on first open
+  useEffect(() => {
+    const saved = localStorage.getItem("dnu_api_key");
+    if (saved) { setApiKey(saved); setKeySaved(true); }
+  }, []);
+
+  // Save API key to browser whenever it changes
+  function handleKeyChange(val) {
+    setApiKey(val);
+    if (val.length > 10) {
+      localStorage.setItem("dnu_api_key", val);
+      setKeySaved(true);
+    } else {
+      localStorage.removeItem("dnu_api_key");
+      setKeySaved(false);
+    }
+  }
+
+  // Call Claude API
+  async function callClaude(prompt) {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1500,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message);
+    const text = data.content[0].text;
+    return text.replace(/```json|```/g, "").trim();
+  }
+
+  // STEP 1: Generate headlines
+  async function fetchHeadlines(cat) {
+    if (!apiKey) { setError("Please enter your Anthropic API key first!"); return; }
+    setCategory(cat);
+    setHeadlines([]);
+    setSelectedHL(null);
+    setPosts({});
+    setError("");
+    setLoadingHL(true);
+    try {
+      const raw = await callClaude(
+        `You are a news editor for Daily News Uganda, a Ugandan news website.
+Generate exactly 10 realistic, current-sounding news headlines for the category: ${cat}.
+Headlines must be relevant to Uganda and East Africa.
+Return ONLY a JSON array of 10 strings. No explanation, no numbering, no markdown.
+Example: ["Headline one", "Headline two", ...]`
+      );
+      setPosts({});
+      setHeadlines(JSON.parse(raw));
+    } catch (e) {
+      setError("Could not load headlines. Check your API key and try again.");
+    }
+    setLoadingHL(false);
+  }
+
+  // STEP 2: Generate posts for all platforms
   async function generatePosts(headline) {
-    setSelectedHeadline(headline);
+    setSelectedHL(headline);
     setPosts({});
     setError("");
     setLoadingPosts(true);
-
     try {
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": apiKey,
-          "anthropic-version": "2023-06-01",
-          "anthropic-dangerous-direct-browser-access": "true",
-        },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1500,
-          messages: [{
-            role: "user",
-            content: `You are a social media manager for Daily News Uganda.
+      const raw = await callClaude(
+        `You are a social media manager for Daily News Uganda.
 Write social media posts for this headline: "${headline}"
-
 Return ONLY a JSON object with exactly these 4 keys:
 {
-  "twitter": "A tweet under 260 characters with 2-3 hashtags",
-  "facebook": "A Facebook post under 480 characters, friendly tone, with hashtags",
-  "whatsapp": "A WhatsApp message under 680 characters, conversational tone",
-  "instagram": "An Instagram caption under 480 characters with emojis and hashtags"
+  "twitter": "Tweet under 260 chars with 2-3 hashtags",
+  "facebook": "Facebook post under 480 chars, engaging tone, with hashtags",
+  "whatsapp": "WhatsApp message under 680 chars, conversational tone",
+  "instagram": "Instagram caption under 480 chars with emojis and hashtags"
 }
 No explanation. Only the JSON object.`
-          }]
-        })
-      });
-
-      const data = await response.json();
-      const text = data.content[0].text;
-      const clean = text.replace(/```json|```/g, "").trim();
-      const parsed = JSON.parse(clean);
-      setPosts(parsed);
-    } catch (err) {
+      );
+      setPosts(JSON.parse(raw));
+    } catch (e) {
       setError("Could not generate posts. Please try again.");
     }
-
     setLoadingPosts(false);
   }
 
+  // Regenerate a single platform
+  async function regenOne(platformId) {
+    if (!selectedHL) return;
+    setRegenLoading(prev => ({ ...prev, [platformId]: true }));
+    setError("");
+    try {
+      const raw = await callClaude(
+        `You are a social media manager for Daily News Uganda.
+Write a DIFFERENT version of a ${platformId} post for this headline: "${selectedHL}"
+Return ONLY a JSON object with one key: { "${platformId}": "your post here" }
+No explanation. Only the JSON.`
+      );
+      const parsed = JSON.parse(raw);
+      setPosts(prev => ({ ...prev, [platformId]: parsed[platformId] }));
+    } catch (e) {
+      setError("Could not regenerate. Please try again.");
+    }
+    setRegenLoading(prev => ({ ...prev, [platformId]: false }));
+  }
+
+  // Copy to clipboard
   function handleCopy(platformId, text) {
     navigator.clipboard.writeText(text);
     setCopied(prev => ({ ...prev, [platformId]: true }));
     setTimeout(() => setCopied(prev => ({ ...prev, [platformId]: false })), 2000);
   }
 
+  const hasPosts = Object.keys(posts).length > 0;
+
   return (
-    <div style={{ minHeight: "100vh", background: "#0f0e0c", color: "#f0ebe0", fontFamily: "sans-serif", padding: "24px" }}>
-      
-      {/* HEADER */}
-      <div style={{ borderBottom: "2px solid #c8a44a", paddingBottom: "16px", marginBottom: "28px" }}>
-        <h1 style={{ fontFamily: "Georgia, serif", fontSize: "22px", color: "#f0ebe0", marginBottom: "4px" }}>
-          📰 Daily News Uganda
-        </h1>
-        <p style={{ fontSize: "12px", color: "#c8a44a", letterSpacing: "2px", textTransform: "uppercase" }}>
-          Social Media Post Generator
-        </p>
-      </div>
+    <>
+      <style>{STYLES}</style>
+      <div className="app">
 
-      {/* API KEY INPUT */}
-      <div style={{ background: "#18160f", border: "1px solid #2a2520", borderRadius: "10px", padding: "20px", marginBottom: "24px" }}>
-        <p style={{ fontSize: "13px", color: "#7a6f5e", marginBottom: "8px" }}>🔑 Your Anthropic API Key</p>
-        <input
-          type="password"
-          placeholder="Paste your API key here..."
-          value={apiKey}
-          onChange={e => setApiKey(e.target.value)}
-          style={{ width: "100%", background: "#0f0e0c", border: "1px solid #2a2520", borderRadius: "6px", padding: "10px 14px", color: "#f0ebe0", fontSize: "14px", outline: "none" }}
-        />
-        <p style={{ fontSize: "11px", color: "#7a6f5e", marginTop: "6px" }}>Your key is never saved or sent anywhere except directly to Anthropic.</p>
-      </div>
-
-      {/* STEP 1: CATEGORY PICKER */}
-      <div style={{ background: "#18160f", border: "1px solid #2a2520", borderRadius: "10px", padding: "20px", marginBottom: "24px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-          <div style={{ width: "26px", height: "26px", borderRadius: "50%", background: "#c8a44a", color: "#0f0e0c", fontSize: "12px", fontWeight: "700", display: "flex", alignItems: "center", justifyContent: "center" }}>1</div>
+        {/* HEADER */}
+        <div className="hdr">
+          <div className="hdr-icon">📰</div>
           <div>
-            <p style={{ fontSize: "13px", fontWeight: "600", color: "#f0ebe0" }}>Choose a Category</p>
-            <p style={{ fontSize: "11px", color: "#7a6f5e" }}>AI will generate 10 headlines for you</p>
+            <div className="hdr-title">Daily News Uganda</div>
+            <div className="hdr-sub">Social Media Post Generator</div>
           </div>
         </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat.id}
-              onClick={() => apiKey ? fetchHeadlines(cat.id) : setError("Please enter your API key first!")}
-              style={{
-                padding: "7px 14px", borderRadius: "24px",
-                border: category === cat.id ? "1px solid #c8a44a" : "1px solid #2a2520",
-                background: category === cat.id ? "rgba(200,164,74,0.15)" : "transparent",
-                color: category === cat.id ? "#c8a44a" : "#7a6f5e",
-                fontSize: "13px", cursor: "pointer", display: "flex", alignItems: "center", gap: "5px"
-              }}
-            >
-              {cat.emoji} {cat.id}
-            </button>
-          ))}
-        </div>
-      </div>
 
-      {/* STEP 2: HEADLINES */}
-      {(loadingHeadlines || headlines.length > 0) && (
-        <div style={{ background: "#18160f", border: "1px solid #2a2520", borderRadius: "10px", padding: "20px", marginBottom: "24px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-            <div style={{ width: "26px", height: "26px", borderRadius: "50%", background: "#c8a44a", color: "#0f0e0c", fontSize: "12px", fontWeight: "700", display: "flex", alignItems: "center", justifyContent: "center" }}>2</div>
-            <div>
-              <p style={{ fontSize: "13px", fontWeight: "600", color: "#f0ebe0" }}>Pick a Headline</p>
-              <p style={{ fontSize: "11px", color: "#7a6f5e" }}>Click any headline to generate social media posts</p>
+        <div className="main">
+
+          {/* API KEY */}
+          <div className="card">
+            <div className="step-hdr">
+              <div className="step-num">🔑</div>
+              <div>
+                <div className="step-title">Your Anthropic API Key</div>
+                <div className="step-sub">Saved automatically in your browser</div>
+              </div>
             </div>
+            <input
+              className="api-input"
+              type="password"
+              placeholder="Paste your API key here — sk-ant-..."
+              value={apiKey}
+              onChange={e => handleKeyChange(e.target.value)}
+            />
+            {keySaved
+              ? <div className="api-saved">✓ Key saved in your browser — you won't need to paste it again</div>
+              : <div className="api-hint">Your key is never shared. It's stored only in this browser.</div>
+            }
           </div>
-          {loadingHeadlines ? (
-            <p style={{ color: "#c8a44a", fontSize: "13px" }}>⏳ Generating headlines...</p>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              {headlines.map((h, i) => (
+
+          {/* STEP 1: CATEGORIES */}
+          <div className="card">
+            <div className="step-hdr">
+              <div className="step-num">1</div>
+              <div>
+                <div className="step-title">Choose a Category</div>
+                <div className="step-sub">AI will generate 10 Uganda-focused headlines for you</div>
+              </div>
+            </div>
+            <div className="cats">
+              {CATEGORIES.map(cat => (
                 <button
-                  key={i}
-                  onClick={() => generatePosts(h)}
-                  style={{
-                    textAlign: "left", padding: "12px 16px", borderRadius: "8px",
-                    border: selectedHeadline === h ? "1px solid #c8a44a" : "1px solid #2a2520",
-                    background: selectedHeadline === h ? "rgba(200,164,74,0.1)" : "#0f0e0c",
-                    color: selectedHeadline === h ? "#c8a44a" : "#f0ebe0",
-                    fontSize: "13px", cursor: "pointer", lineHeight: "1.5"
-                  }}
+                  key={cat.id}
+                  className={`cat${category === cat.id ? " on" : ""}`}
+                  onClick={() => fetchHeadlines(cat.id)}
+                  disabled={loadingHL}
                 >
-                  {i + 1}. {h}
+                  {cat.emoji} {cat.id}
                 </button>
               ))}
             </div>
-          )}
-        </div>
-      )}
-
-      {/* STEP 3: GENERATED POSTS */}
-      {(loadingPosts || Object.keys(posts).length > 0) && (
-        <div style={{ background: "#18160f", border: "1px solid #2a2520", borderRadius: "10px", padding: "20px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-            <div style={{ width: "26px", height: "26px", borderRadius: "50%", background: "#c8a44a", color: "#0f0e0c", fontSize: "12px", fontWeight: "700", display: "flex", alignItems: "center", justifyContent: "center" }}>3</div>
-            <div>
-              <p style={{ fontSize: "13px", fontWeight: "600", color: "#f0ebe0" }}>Your Generated Posts</p>
-              <p style={{ fontSize: "11px", color: "#7a6f5e" }}>Edit if needed, then copy to your social media</p>
-            </div>
+            {loadingHL && (
+              <div className="loading" style={{ marginTop: 16 }}>
+                <div className="spinner"/> Generating headlines...
+              </div>
+            )}
           </div>
-          {loadingPosts ? (
-            <p style={{ color: "#c8a44a", fontSize: "13px" }}>⏳ Writing posts for all platforms...</p>
-          ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
-              {PLATFORMS.map(p => (
-                <div key={p.id} style={{ background: "#0f0e0c", border: "1px solid #2a2520", borderRadius: "10px", padding: "16px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
-                    <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: p.bg, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: "14px", fontWeight: "700", flexShrink: 0 }}>
-                      {p.icon}
-                    </div>
-                    <span style={{ fontSize: "13px", fontWeight: "600", color: "#f0ebe0" }}>{p.name}</span>
-                    <span style={{ marginLeft: "auto", fontSize: "11px", color: (posts[p.id] || "").length > p.limit ? "#e74c3c" : "#7a6f5e" }}>
-                      {(posts[p.id] || "").length}/{p.limit}
-                    </span>
-                  </div>
-                  <textarea
-                    value={posts[p.id] || ""}
-                    rows={6}
-                    onChange={e => setPosts(prev => ({ ...prev, [p.id]: e.target.value }))}
-                    style={{ width: "100%", background: "#18160f", border: "1px solid #2a2520", borderRadius: "6px", padding: "10px", color: "#f0ebe0", fontSize: "12px", resize: "vertical", outline: "none", fontFamily: "sans-serif", lineHeight: "1.5" }}
-                  />
-                  <button
-                    onClick={() => handleCopy(p.id, posts[p.id])}
-                    style={{ marginTop: "10px", width: "100%", padding: "8px", borderRadius: "6px", border: "1px solid #c8a44a", background: copied[p.id] ? "#c8a44a" : "transparent", color: copied[p.id] ? "#0f0e0c" : "#c8a44a", fontSize: "12px", fontWeight: "600", cursor: "pointer" }}
-                  >
-                    {copied[p.id] ? "✓ Copied!" : `Copy ${p.label}`}
-                  </button>
+
+          {/* STEP 2: HEADLINES */}
+          {headlines.length > 0 && (
+            <div className="card">
+              <div className="step-hdr">
+                <div className="step-num">2</div>
+                <div>
+                  <div className="step-title">Pick a Headline</div>
+                  <div className="step-sub">Click any headline to generate posts for all 4 platforms</div>
                 </div>
-              ))}
+              </div>
+              <div className="headlines">
+                {headlines.map((h, i) => (
+                  <button
+                    key={i}
+                    className={`hl-btn${selectedHL === h ? " on" : ""}`}
+                    onClick={() => generatePosts(h)}
+                    disabled={loadingPosts}
+                  >
+                    <span className="hl-num">{i + 1}.</span>
+                    {h}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
-        </div>
-      )}
 
-      {/* ERROR MESSAGE */}
-      {error && (
-        <div style={{ background: "rgba(231,76,60,0.1)", border: "1px solid #e74c3c", borderRadius: "8px", padding: "12px 16px", marginTop: "16px", fontSize: "13px", color: "#e74c3c" }}>
-          ⚠ {error}
-        </div>
-      )}
+          {/* STEP 3: GENERATED POSTS */}
+          {(loadingPosts || hasPosts) && (
+            <div className="card">
+              <div className="step-hdr">
+                <div className="step-num">3</div>
+                <div>
+                  <div className="step-title">Your Generated Posts</div>
+                  <div className="step-sub">Edit if needed · Use ↻ to get a fresh version of any post</div>
+                </div>
+              </div>
+              <hr className="divider"/>
+              {loadingPosts ? (
+                <div className="loading">
+                  <div className="spinner"/> Writing posts for all 4 platforms...
+                </div>
+              ) : (
+                <div className="grid">
+                  {PLATFORMS.map(p => {
+                    const text = posts[p.id] || "";
+                    const over = text.length > p.limit;
+                    return (
+                      <div key={p.id} className="pcard">
+                        <div className="pcard-hdr">
+                          <div className="picon" style={{ background: p.bg }}>{p.icon}</div>
+                          <span className="pname">{p.name}</span>
+                          <span className={`pcount${over ? " over" : ""}`}>{text.length}/{p.limit}</span>
+                        </div>
+                        <textarea
+                          className="pta"
+                          value={text}
+                          rows={7}
+                          onChange={e => setPosts(prev => ({ ...prev, [p.id]: e.target.value }))}
+                        />
+                        <div className="wm">
+                          <span>📰</span>
+                          <span>Daily News Uganda</span>
+                        </div>
+                        <div className="btn-row">
+                          <button
+                            className={`copy-btn${copied[p.id] ? " ok" : ""}`}
+                            onClick={() => handleCopy(p.id, text)}
+                          >
+                            {copied[p.id] ? "✓ Copied!" : `Copy ${p.label}`}
+                          </button>
+                          <button
+                            className="regen-btn"
+                            onClick={() => regenOne(p.id)}
+                            disabled={regenLoading[p.id]}
+                            title="Get a different version"
+                          >
+                            {regenLoading[p.id] ? <span className="spinner"/> : "↻"}
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
 
-    </div>
+          {/* ERROR */}
+          {error && <div className="err-box">⚠ {error}</div>}
+
+        </div>
+      </div>
+    </>
   );
 }
