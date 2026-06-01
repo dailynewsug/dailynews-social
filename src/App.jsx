@@ -22,230 +22,55 @@ const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@300;400;600&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: #0f0e0c; }
-
-  .app {
-    min-height: 100vh;
-    background: #0f0e0c;
-    color: #f0ebe0;
-    font-family: 'Source Sans 3', sans-serif;
-    padding-bottom: 80px;
-  }
-
-  .hdr {
-    background: #0f0e0c;
-    border-bottom: 2px solid #c8a44a;
-    padding: 16px 28px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    position: sticky;
-    top: 0;
-    z-index: 30;
-  }
+  .app { min-height: 100vh; background: #0f0e0c; color: #f0ebe0; font-family: 'Source Sans 3', sans-serif; padding-bottom: 80px; }
+  .hdr { background: #0f0e0c; border-bottom: 2px solid #c8a44a; padding: 16px 28px; display: flex; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 30; }
   .hdr-icon { font-size: 32px; }
-  .hdr-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    font-weight: 900;
-    color: #f0ebe0;
-    letter-spacing: -0.3px;
-  }
-  .hdr-sub {
-    font-size: 10px;
-    color: #c8a44a;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-top: 2px;
-  }
-
+  .hdr-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 900; color: #f0ebe0; letter-spacing: -0.3px; }
+  .hdr-sub { font-size: 10px; color: #c8a44a; letter-spacing: 3px; text-transform: uppercase; margin-top: 2px; }
   .main { max-width: 980px; margin: 0 auto; padding: 28px 18px 0; }
-
-  .card {
-    background: #18160f;
-    border: 1px solid #2a2520;
-    border-radius: 12px;
-    padding: 22px;
-    margin-bottom: 22px;
-  }
-
+  .card { background: #18160f; border: 1px solid #2a2520; border-radius: 12px; padding: 22px; margin-bottom: 22px; }
   .step-hdr { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
-  .step-num {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background: #c8a44a;
-    color: #0f0e0c;
-    font-size: 13px;
-    font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
+  .step-num { width: 28px; height: 28px; border-radius: 50%; background: #c8a44a; color: #0f0e0c; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .step-title { font-size: 14px; font-weight: 600; color: #f0ebe0; }
   .step-sub { font-size: 11px; color: #7a6f5e; margin-top: 2px; }
-
-  .api-input {
-    width: 100%;
-    background: #0f0e0c;
-    border: 1px solid #2a2520;
-    border-radius: 8px;
-    padding: 11px 16px;
-    color: #f0ebe0;
-    font-size: 14px;
-    outline: none;
-    font-family: 'Source Sans 3', sans-serif;
-    transition: border-color 0.2s;
-  }
+  .api-input { width: 100%; background: #0f0e0c; border: 1px solid #2a2520; border-radius: 8px; padding: 11px 16px; color: #f0ebe0; font-size: 14px; outline: none; font-family: 'Source Sans 3', sans-serif; transition: border-color 0.2s; }
   .api-input:focus { border-color: #c8a44a; }
   .api-hint { font-size: 11px; color: #7a6f5e; margin-top: 7px; }
   .api-saved { font-size: 11px; color: #c8a44a; margin-top: 7px; }
-
+  .badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(200,164,74,0.1); border: 1px solid rgba(200,164,74,0.3); border-radius: 20px; padding: 3px 10px; font-size: 10px; color: #c8a44a; margin-top: 8px; }
   .cats { display: flex; flex-wrap: wrap; gap: 9px; }
-  .cat {
-    padding: 8px 16px;
-    border-radius: 24px;
-    border: 1px solid #2a2520;
-    background: transparent;
-    color: #7a6f5e;
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex; align-items: center; gap: 6px;
-  }
+  .cat { padding: 8px 16px; border-radius: 24px; border: 1px solid #2a2520; background: transparent; color: #7a6f5e; font-family: 'Source Sans 3', sans-serif; font-size: 13px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
   .cat:hover { border-color: #c8a44a; color: #c8a44a; background: rgba(200,164,74,0.08); }
   .cat.on { border-color: #c8a44a; color: #c8a44a; background: rgba(200,164,74,0.15); font-weight: 600; }
-
+  .cat:disabled { opacity: 0.5; cursor: not-allowed; }
   .headlines { display: flex; flex-direction: column; gap: 9px; }
-  .hl-btn {
-    text-align: left;
-    padding: 13px 17px;
-    border-radius: 9px;
-    border: 1px solid #2a2520;
-    background: #0f0e0c;
-    color: #f0ebe0;
-    font-size: 13px;
-    font-family: 'Source Sans 3', sans-serif;
-    cursor: pointer;
-    line-height: 1.5;
-    transition: all 0.2s;
-    display: flex; align-items: flex-start; gap: 10px;
-  }
+  .hl-btn { text-align: left; padding: 13px 17px; border-radius: 9px; border: 1px solid #2a2520; background: #0f0e0c; color: #f0ebe0; font-size: 13px; font-family: 'Source Sans 3', sans-serif; cursor: pointer; line-height: 1.5; transition: all 0.2s; display: flex; align-items: flex-start; gap: 10px; }
   .hl-btn:hover { border-color: #c8a44a; color: #c8a44a; }
   .hl-btn.on { border-color: #c8a44a; background: rgba(200,164,74,0.1); color: #c8a44a; }
+  .hl-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .hl-num { color: #c8a44a; font-weight: 700; flex-shrink: 0; font-size: 12px; margin-top: 1px; }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-    gap: 18px;
-  }
-  .pcard {
-    background: #0f0e0c;
-    border: 1px solid #2a2520;
-    border-radius: 12px;
-    padding: 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 18px; }
+  .pcard { background: #0f0e0c; border: 1px solid #2a2520; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
   .pcard-hdr { display: flex; align-items: center; gap: 10px; }
-  .picon {
-    width: 34px; height: 34px;
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    color: #fff;
-    font-size: 15px;
-    font-weight: 700;
-    flex-shrink: 0;
-  }
+  .picon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 15px; font-weight: 700; flex-shrink: 0; }
   .pname { font-size: 13px; font-weight: 600; color: #f0ebe0; }
   .pcount { margin-left: auto; font-size: 11px; color: #7a6f5e; }
   .pcount.over { color: #e74c3c; }
-  .pta {
-    width: 100%;
-    background: #18160f;
-    border: 1px solid #2a2520;
-    border-radius: 8px;
-    padding: 11px;
-    color: #f0ebe0;
-    font-size: 12px;
-    resize: vertical;
-    outline: none;
-    font-family: 'Source Sans 3', sans-serif;
-    line-height: 1.6;
-    transition: border-color 0.2s;
-  }
+  .pta { width: 100%; background: #18160f; border: 1px solid #2a2520; border-radius: 8px; padding: 11px; color: #f0ebe0; font-size: 12px; resize: vertical; outline: none; font-family: 'Source Sans 3', sans-serif; line-height: 1.6; transition: border-color 0.2s; }
   .pta:focus { border-color: #c8a44a; }
-
   .btn-row { display: flex; gap: 8px; }
-  .copy-btn {
-    flex: 1;
-    padding: 9px;
-    border-radius: 7px;
-    border: 1px solid #c8a44a;
-    background: transparent;
-    color: #c8a44a;
-    font-size: 12px;
-    font-weight: 600;
-    font-family: 'Source Sans 3', sans-serif;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
+  .copy-btn { flex: 1; padding: 9px; border-radius: 7px; border: 1px solid #c8a44a; background: transparent; color: #c8a44a; font-size: 12px; font-weight: 600; font-family: 'Source Sans 3', sans-serif; cursor: pointer; transition: all 0.2s; }
   .copy-btn:hover { background: rgba(200,164,74,0.15); }
   .copy-btn.ok { background: #c8a44a; color: #0f0e0c; }
-  .regen-btn {
-    padding: 9px 13px;
-    border-radius: 7px;
-    border: 1px solid #2a2520;
-    background: transparent;
-    color: #7a6f5e;
-    font-size: 15px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: 'Source Sans 3', sans-serif;
-  }
+  .regen-btn { padding: 9px 13px; border-radius: 7px; border: 1px solid #2a2520; background: transparent; color: #7a6f5e; font-size: 15px; cursor: pointer; transition: all 0.2s; }
   .regen-btn:hover:not(:disabled) { border-color: #c8a44a; color: #c8a44a; }
   .regen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  .loading { color: #c8a44a; font-size: 13px; display: flex; align-items: center; gap: 8px; }
-  .spinner {
-    width: 14px; height: 14px;
-    border: 2px solid #2a2520;
-    border-top-color: #c8a44a;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    flex-shrink: 0;
-  }
+  .loading { color: #c8a44a; font-size: 13px; display: flex; align-items: center; gap: 8px; margin-top: 16px; }
+  .spinner { width: 14px; height: 14px; border: 2px solid #2a2520; border-top-color: #c8a44a; border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; display: inline-block; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  .err-box {
-    background: rgba(231,76,60,0.1);
-    border: 1px solid #e74c3c;
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 13px;
-    color: #e74c3c;
-    margin-top: 16px;
-  }
-
+  .err-box { background: rgba(231,76,60,0.1); border: 1px solid #e74c3c; border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #e74c3c; margin-top: 16px; }
   .divider { border: none; border-top: 1px solid #2a2520; margin: 4px 0 20px; }
-
-  .wm {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 10px; color: #7a6f5e;
-    letter-spacing: 1px; text-transform: uppercase;
-  }
-
-  .gemini-badge {
-    display: inline-flex; align-items: center; gap: 5px;
-    background: rgba(66,133,244,0.1);
-    border: 1px solid rgba(66,133,244,0.3);
-    border-radius: 20px;
-    padding: 3px 10px;
-    font-size: 10px;
-    color: #4285f4;
-    margin-top: 8px;
-  }
-
+  .wm { display: flex; align-items: center; gap: 6px; font-size: 10px; color: #7a6f5e; letter-spacing: 1px; text-transform: uppercase; }
   @media (max-width: 600px) {
     .hdr { padding: 12px 16px; }
     .hdr-title { font-size: 16px; }
@@ -255,6 +80,9 @@ const STYLES = `
     .cat { font-size: 12px; padding: 6px 12px; }
   }
 `;
+
+// The free Llama model on OpenRouter
+const MODEL = "meta-llama/llama-3.3-70b-instruct:free";
 
 export default function App() {
   const [apiKey, setApiKey]             = useState("");
@@ -269,46 +97,50 @@ export default function App() {
   const [copied, setCopied]             = useState({});
   const [error, setError]               = useState("");
 
-  // Load saved API key from browser on first open
+  // Load saved key from browser on first open
   useEffect(() => {
-    const saved = localStorage.getItem("dnu_gemini_key");
+    const saved = localStorage.getItem("dnu_openrouter_key");
     if (saved) { setApiKey(saved); setKeySaved(true); }
   }, []);
 
-  // Save API key to browser whenever it changes
+  // Save key whenever it changes
   function handleKeyChange(val) {
     setApiKey(val);
     if (val.length > 10) {
-      localStorage.setItem("dnu_gemini_key", val);
+      localStorage.setItem("dnu_openrouter_key", val);
       setKeySaved(true);
     } else {
-      localStorage.removeItem("dnu_gemini_key");
+      localStorage.removeItem("dnu_openrouter_key");
       setKeySaved(false);
     }
   }
 
-  // Call Google Gemini API
-  async function callGemini(prompt) {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.8, maxOutputTokens: 1500 }
-        })
-      }
-    );
+  // Call OpenRouter API
+  async function callAI(prompt) {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`,
+        "HTTP-Referer": "https://dailynewsug.github.io",
+        "X-Title": "Daily News Uganda Social Generator",
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.8,
+        max_tokens: 1500,
+      })
+    });
     const data = await response.json();
     if (data.error) throw new Error(data.error.message);
-    const text = data.candidates[0].content.parts[0].text;
+    const text = data.choices[0].message.content;
     return text.replace(/```json|```/g, "").trim();
   }
 
   // STEP 1: Generate headlines
   async function fetchHeadlines(cat) {
-    if (!apiKey) { setError("Please enter your Gemini API key first!"); return; }
+    if (!apiKey) { setError("Please enter your OpenRouter API key first!"); return; }
     setCategory(cat);
     setHeadlines([]);
     setSelectedHL(null);
@@ -316,16 +148,19 @@ export default function App() {
     setError("");
     setLoadingHL(true);
     try {
-      const raw = await callGemini(
+      const raw = await callAI(
         `You are a news editor for Daily News Uganda, a Ugandan news website.
 Generate exactly 10 realistic, current-sounding news headlines for the category: ${cat}.
 Headlines must be relevant to Uganda and East Africa.
 Return ONLY a JSON array of 10 strings. No explanation, no numbering, no markdown.
 Example: ["Headline one", "Headline two", ...]`
       );
-      setHeadlines(JSON.parse(raw));
+      // Find the JSON array in the response
+      const match = raw.match(/\[[\s\S]*\]/);
+      if (!match) throw new Error("No valid JSON found");
+      setHeadlines(JSON.parse(match[0]));
     } catch (e) {
-      setError("Could not load headlines. Check your Gemini API key and try again. Error: " + e.message);
+      setError("Could not load headlines. Check your API key and try again. Error: " + e.message);
     }
     setLoadingHL(false);
   }
@@ -337,7 +172,7 @@ Example: ["Headline one", "Headline two", ...]`
     setError("");
     setLoadingPosts(true);
     try {
-      const raw = await callGemini(
+      const raw = await callAI(
         `You are a social media manager for Daily News Uganda.
 Write social media posts for this headline: "${headline}"
 Return ONLY a JSON object with exactly these 4 keys:
@@ -349,26 +184,30 @@ Return ONLY a JSON object with exactly these 4 keys:
 }
 No explanation. Only the JSON object.`
       );
-      setPosts(JSON.parse(raw));
+      const match = raw.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error("No valid JSON found");
+      setPosts(JSON.parse(match[0]));
     } catch (e) {
       setError("Could not generate posts. Please try again. Error: " + e.message);
     }
     setLoadingPosts(false);
   }
 
-  // Regenerate a single platform
+  // Regenerate one platform
   async function regenOne(platformId) {
     if (!selectedHL) return;
     setRegenLoading(prev => ({ ...prev, [platformId]: true }));
     setError("");
     try {
-      const raw = await callGemini(
+      const raw = await callAI(
         `You are a social media manager for Daily News Uganda.
 Write a DIFFERENT version of a ${platformId} post for this headline: "${selectedHL}"
 Return ONLY a JSON object with one key: { "${platformId}": "your post here" }
 No explanation. Only the JSON.`
       );
-      const parsed = JSON.parse(raw);
+      const match = raw.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error("No valid JSON found");
+      const parsed = JSON.parse(match[0]);
       setPosts(prev => ({ ...prev, [platformId]: parsed[platformId] }));
     } catch (e) {
       setError("Could not regenerate. Please try again.");
@@ -406,14 +245,14 @@ No explanation. Only the JSON.`
             <div className="step-hdr">
               <div className="step-num">🔑</div>
               <div>
-                <div className="step-title">Your Google Gemini API Key</div>
-                <div className="step-sub">Free — get yours at aistudio.google.com</div>
+                <div className="step-title">Your OpenRouter API Key</div>
+                <div className="step-sub">Free — get yours at openrouter.ai</div>
               </div>
             </div>
             <input
               className="api-input"
               type="password"
-              placeholder="Paste your Gemini API key here..."
+              placeholder="Paste your OpenRouter key here — sk-or-..."
               value={apiKey}
               onChange={e => handleKeyChange(e.target.value)}
             />
@@ -421,7 +260,7 @@ No explanation. Only the JSON.`
               ? <div className="api-saved">✓ Key saved in your browser — no need to paste it again</div>
               : <div className="api-hint">Your key is stored only in this browser. Never shared.</div>
             }
-            <div className="gemini-badge">⚡ Powered by Google Gemini 2.0 Flash — Free</div>
+            <div className="badge">⚡ Powered by Meta Llama 3.3 70B — Free via OpenRouter</div>
           </div>
 
           {/* STEP 1: CATEGORIES */}
@@ -439,14 +278,14 @@ No explanation. Only the JSON.`
                   key={cat.id}
                   className={`cat${category === cat.id ? " on" : ""}`}
                   onClick={() => fetchHeadlines(cat.id)}
-                  disabled={loadingHL}
+                  disabled={loadingHL || loadingPosts}
                 >
                   {cat.emoji} {cat.id}
                 </button>
               ))}
             </div>
             {loadingHL && (
-              <div className="loading" style={{ marginTop: 16 }}>
+              <div className="loading">
                 <div className="spinner"/> Generating headlines...
               </div>
             )}
