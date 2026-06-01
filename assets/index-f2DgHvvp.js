@@ -10,230 +10,55 @@ Error generating stack: `+e.message+`
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@300;400;600&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: #0f0e0c; }
-
-  .app {
-    min-height: 100vh;
-    background: #0f0e0c;
-    color: #f0ebe0;
-    font-family: 'Source Sans 3', sans-serif;
-    padding-bottom: 80px;
-  }
-
-  .hdr {
-    background: #0f0e0c;
-    border-bottom: 2px solid #c8a44a;
-    padding: 16px 28px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    position: sticky;
-    top: 0;
-    z-index: 30;
-  }
+  .app { min-height: 100vh; background: #0f0e0c; color: #f0ebe0; font-family: 'Source Sans 3', sans-serif; padding-bottom: 80px; }
+  .hdr { background: #0f0e0c; border-bottom: 2px solid #c8a44a; padding: 16px 28px; display: flex; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 30; }
   .hdr-icon { font-size: 32px; }
-  .hdr-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    font-weight: 900;
-    color: #f0ebe0;
-    letter-spacing: -0.3px;
-  }
-  .hdr-sub {
-    font-size: 10px;
-    color: #c8a44a;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-top: 2px;
-  }
-
+  .hdr-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 900; color: #f0ebe0; letter-spacing: -0.3px; }
+  .hdr-sub { font-size: 10px; color: #c8a44a; letter-spacing: 3px; text-transform: uppercase; margin-top: 2px; }
   .main { max-width: 980px; margin: 0 auto; padding: 28px 18px 0; }
-
-  .card {
-    background: #18160f;
-    border: 1px solid #2a2520;
-    border-radius: 12px;
-    padding: 22px;
-    margin-bottom: 22px;
-  }
-
+  .card { background: #18160f; border: 1px solid #2a2520; border-radius: 12px; padding: 22px; margin-bottom: 22px; }
   .step-hdr { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
-  .step-num {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background: #c8a44a;
-    color: #0f0e0c;
-    font-size: 13px;
-    font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
+  .step-num { width: 28px; height: 28px; border-radius: 50%; background: #c8a44a; color: #0f0e0c; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .step-title { font-size: 14px; font-weight: 600; color: #f0ebe0; }
   .step-sub { font-size: 11px; color: #7a6f5e; margin-top: 2px; }
-
-  .api-input {
-    width: 100%;
-    background: #0f0e0c;
-    border: 1px solid #2a2520;
-    border-radius: 8px;
-    padding: 11px 16px;
-    color: #f0ebe0;
-    font-size: 14px;
-    outline: none;
-    font-family: 'Source Sans 3', sans-serif;
-    transition: border-color 0.2s;
-  }
+  .api-input { width: 100%; background: #0f0e0c; border: 1px solid #2a2520; border-radius: 8px; padding: 11px 16px; color: #f0ebe0; font-size: 14px; outline: none; font-family: 'Source Sans 3', sans-serif; transition: border-color 0.2s; }
   .api-input:focus { border-color: #c8a44a; }
   .api-hint { font-size: 11px; color: #7a6f5e; margin-top: 7px; }
   .api-saved { font-size: 11px; color: #c8a44a; margin-top: 7px; }
-
+  .badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(200,164,74,0.1); border: 1px solid rgba(200,164,74,0.3); border-radius: 20px; padding: 3px 10px; font-size: 10px; color: #c8a44a; margin-top: 8px; }
   .cats { display: flex; flex-wrap: wrap; gap: 9px; }
-  .cat {
-    padding: 8px 16px;
-    border-radius: 24px;
-    border: 1px solid #2a2520;
-    background: transparent;
-    color: #7a6f5e;
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex; align-items: center; gap: 6px;
-  }
+  .cat { padding: 8px 16px; border-radius: 24px; border: 1px solid #2a2520; background: transparent; color: #7a6f5e; font-family: 'Source Sans 3', sans-serif; font-size: 13px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
   .cat:hover { border-color: #c8a44a; color: #c8a44a; background: rgba(200,164,74,0.08); }
   .cat.on { border-color: #c8a44a; color: #c8a44a; background: rgba(200,164,74,0.15); font-weight: 600; }
-
+  .cat:disabled { opacity: 0.5; cursor: not-allowed; }
   .headlines { display: flex; flex-direction: column; gap: 9px; }
-  .hl-btn {
-    text-align: left;
-    padding: 13px 17px;
-    border-radius: 9px;
-    border: 1px solid #2a2520;
-    background: #0f0e0c;
-    color: #f0ebe0;
-    font-size: 13px;
-    font-family: 'Source Sans 3', sans-serif;
-    cursor: pointer;
-    line-height: 1.5;
-    transition: all 0.2s;
-    display: flex; align-items: flex-start; gap: 10px;
-  }
+  .hl-btn { text-align: left; padding: 13px 17px; border-radius: 9px; border: 1px solid #2a2520; background: #0f0e0c; color: #f0ebe0; font-size: 13px; font-family: 'Source Sans 3', sans-serif; cursor: pointer; line-height: 1.5; transition: all 0.2s; display: flex; align-items: flex-start; gap: 10px; }
   .hl-btn:hover { border-color: #c8a44a; color: #c8a44a; }
   .hl-btn.on { border-color: #c8a44a; background: rgba(200,164,74,0.1); color: #c8a44a; }
+  .hl-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .hl-num { color: #c8a44a; font-weight: 700; flex-shrink: 0; font-size: 12px; margin-top: 1px; }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-    gap: 18px;
-  }
-  .pcard {
-    background: #0f0e0c;
-    border: 1px solid #2a2520;
-    border-radius: 12px;
-    padding: 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 18px; }
+  .pcard { background: #0f0e0c; border: 1px solid #2a2520; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
   .pcard-hdr { display: flex; align-items: center; gap: 10px; }
-  .picon {
-    width: 34px; height: 34px;
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    color: #fff;
-    font-size: 15px;
-    font-weight: 700;
-    flex-shrink: 0;
-  }
+  .picon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 15px; font-weight: 700; flex-shrink: 0; }
   .pname { font-size: 13px; font-weight: 600; color: #f0ebe0; }
   .pcount { margin-left: auto; font-size: 11px; color: #7a6f5e; }
   .pcount.over { color: #e74c3c; }
-  .pta {
-    width: 100%;
-    background: #18160f;
-    border: 1px solid #2a2520;
-    border-radius: 8px;
-    padding: 11px;
-    color: #f0ebe0;
-    font-size: 12px;
-    resize: vertical;
-    outline: none;
-    font-family: 'Source Sans 3', sans-serif;
-    line-height: 1.6;
-    transition: border-color 0.2s;
-  }
+  .pta { width: 100%; background: #18160f; border: 1px solid #2a2520; border-radius: 8px; padding: 11px; color: #f0ebe0; font-size: 12px; resize: vertical; outline: none; font-family: 'Source Sans 3', sans-serif; line-height: 1.6; transition: border-color 0.2s; }
   .pta:focus { border-color: #c8a44a; }
-
   .btn-row { display: flex; gap: 8px; }
-  .copy-btn {
-    flex: 1;
-    padding: 9px;
-    border-radius: 7px;
-    border: 1px solid #c8a44a;
-    background: transparent;
-    color: #c8a44a;
-    font-size: 12px;
-    font-weight: 600;
-    font-family: 'Source Sans 3', sans-serif;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
+  .copy-btn { flex: 1; padding: 9px; border-radius: 7px; border: 1px solid #c8a44a; background: transparent; color: #c8a44a; font-size: 12px; font-weight: 600; font-family: 'Source Sans 3', sans-serif; cursor: pointer; transition: all 0.2s; }
   .copy-btn:hover { background: rgba(200,164,74,0.15); }
   .copy-btn.ok { background: #c8a44a; color: #0f0e0c; }
-  .regen-btn {
-    padding: 9px 13px;
-    border-radius: 7px;
-    border: 1px solid #2a2520;
-    background: transparent;
-    color: #7a6f5e;
-    font-size: 15px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: 'Source Sans 3', sans-serif;
-  }
+  .regen-btn { padding: 9px 13px; border-radius: 7px; border: 1px solid #2a2520; background: transparent; color: #7a6f5e; font-size: 15px; cursor: pointer; transition: all 0.2s; }
   .regen-btn:hover:not(:disabled) { border-color: #c8a44a; color: #c8a44a; }
   .regen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-  .loading { color: #c8a44a; font-size: 13px; display: flex; align-items: center; gap: 8px; }
-  .spinner {
-    width: 14px; height: 14px;
-    border: 2px solid #2a2520;
-    border-top-color: #c8a44a;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    flex-shrink: 0;
-  }
+  .loading { color: #c8a44a; font-size: 13px; display: flex; align-items: center; gap: 8px; margin-top: 16px; }
+  .spinner { width: 14px; height: 14px; border: 2px solid #2a2520; border-top-color: #c8a44a; border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; display: inline-block; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  .err-box {
-    background: rgba(231,76,60,0.1);
-    border: 1px solid #e74c3c;
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 13px;
-    color: #e74c3c;
-    margin-top: 16px;
-  }
-
+  .err-box { background: rgba(231,76,60,0.1); border: 1px solid #e74c3c; border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #e74c3c; margin-top: 16px; }
   .divider { border: none; border-top: 1px solid #2a2520; margin: 4px 0 20px; }
-
-  .wm {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 10px; color: #7a6f5e;
-    letter-spacing: 1px; text-transform: uppercase;
-  }
-
-  .gemini-badge {
-    display: inline-flex; align-items: center; gap: 5px;
-    background: rgba(66,133,244,0.1);
-    border: 1px solid rgba(66,133,244,0.3);
-    border-radius: 20px;
-    padding: 3px 10px;
-    font-size: 10px;
-    color: #4285f4;
-    margin-top: 8px;
-  }
-
+  .wm { display: flex; align-items: center; gap: 6px; font-size: 10px; color: #7a6f5e; letter-spacing: 1px; text-transform: uppercase; }
   @media (max-width: 600px) {
     .hdr { padding: 12px 16px; }
     .hdr-title { font-size: 16px; }
@@ -242,11 +67,11 @@ Error generating stack: `+e.message+`
     .grid { grid-template-columns: 1fr; }
     .cat { font-size: 12px; padding: 6px 12px; }
   }
-`;function g(){let[e,t]=(0,l.useState)(``),[n,r]=(0,l.useState)(!1),[i,a]=(0,l.useState)(null),[o,s]=(0,l.useState)([]),[c,u]=(0,l.useState)(null),[d,g]=(0,l.useState)({}),[_,v]=(0,l.useState)(!1),[y,b]=(0,l.useState)(!1),[x,ee]=(0,l.useState)({}),[S,C]=(0,l.useState)({}),[te,ne]=(0,l.useState)(``);(0,l.useEffect)(()=>{let e=localStorage.getItem(`dnu_gemini_key`);e&&(t(e),r(!0))},[]);function re(e){t(e),e.length>10?(localStorage.setItem(`dnu_gemini_key`,e),r(!0)):(localStorage.removeItem(`dnu_gemini_key`),r(!1))}async function w(t){let n=await(await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${e}`,{method:`POST`,headers:{"Content-Type":`application/json`},body:JSON.stringify({contents:[{parts:[{text:t}]}],generationConfig:{temperature:.8,maxOutputTokens:1500}})})).json();if(n.error)throw Error(n.error.message);return n.candidates[0].content.parts[0].text.replace(/```json|```/g,``).trim()}async function ie(t){if(!e){ne(`Please enter your Gemini API key first!`);return}a(t),s([]),u(null),g({}),ne(``),v(!0);try{let e=await w(`You are a news editor for Daily News Uganda, a Ugandan news website.
+`,g=`meta-llama/llama-3.3-70b-instruct:free`;function _(){let[e,t]=(0,l.useState)(``),[n,r]=(0,l.useState)(!1),[i,a]=(0,l.useState)(null),[o,s]=(0,l.useState)([]),[c,u]=(0,l.useState)(null),[d,_]=(0,l.useState)({}),[v,y]=(0,l.useState)(!1),[b,x]=(0,l.useState)(!1),[ee,S]=(0,l.useState)({}),[C,te]=(0,l.useState)({}),[ne,re]=(0,l.useState)(``);(0,l.useEffect)(()=>{let e=localStorage.getItem(`dnu_openrouter_key`);e&&(t(e),r(!0))},[]);function w(e){t(e),e.length>10?(localStorage.setItem(`dnu_openrouter_key`,e),r(!0)):(localStorage.removeItem(`dnu_openrouter_key`),r(!1))}async function ie(t){let n=await(await fetch(`https://openrouter.ai/api/v1/chat/completions`,{method:`POST`,headers:{"Content-Type":`application/json`,Authorization:`Bearer ${e}`,"HTTP-Referer":`https://dailynewsug.github.io`,"X-Title":`Daily News Uganda Social Generator`},body:JSON.stringify({model:g,messages:[{role:`user`,content:t}],temperature:.8,max_tokens:1500})})).json();if(n.error)throw Error(n.error.message);return n.choices[0].message.content.replace(/```json|```/g,``).trim()}async function ae(t){if(!e){re(`Please enter your OpenRouter API key first!`);return}a(t),s([]),u(null),_({}),re(``),y(!0);try{let e=(await ie(`You are a news editor for Daily News Uganda, a Ugandan news website.
 Generate exactly 10 realistic, current-sounding news headlines for the category: ${t}.
 Headlines must be relevant to Uganda and East Africa.
 Return ONLY a JSON array of 10 strings. No explanation, no numbering, no markdown.
-Example: ["Headline one", "Headline two", ...]`);s(JSON.parse(e))}catch(e){ne(`Could not load headlines. Check your Gemini API key and try again. Error: `+e.message)}v(!1)}async function ae(e){u(e),g({}),ne(``),b(!0);try{let t=await w(`You are a social media manager for Daily News Uganda.
+Example: ["Headline one", "Headline two", ...]`)).match(/\[[\s\S]*\]/);if(!e)throw Error(`No valid JSON found`);s(JSON.parse(e[0]))}catch(e){re(`Could not load headlines. Check your API key and try again. Error: `+e.message)}y(!1)}async function oe(e){u(e),_({}),re(``),x(!0);try{let t=(await ie(`You are a social media manager for Daily News Uganda.
 Write social media posts for this headline: "${e}"
 Return ONLY a JSON object with exactly these 4 keys:
 {
@@ -255,7 +80,7 @@ Return ONLY a JSON object with exactly these 4 keys:
   "whatsapp": "WhatsApp message under 680 chars, conversational tone",
   "instagram": "Instagram caption under 480 chars with emojis and hashtags"
 }
-No explanation. Only the JSON object.`);g(JSON.parse(t))}catch(e){ne(`Could not generate posts. Please try again. Error: `+e.message)}b(!1)}async function oe(e){if(c){ee(t=>({...t,[e]:!0})),ne(``);try{let t=await w(`You are a social media manager for Daily News Uganda.
+No explanation. Only the JSON object.`)).match(/\{[\s\S]*\}/);if(!t)throw Error(`No valid JSON found`);_(JSON.parse(t[0]))}catch(e){re(`Could not generate posts. Please try again. Error: `+e.message)}x(!1)}async function se(e){if(c){S(t=>({...t,[e]:!0})),re(``);try{let t=(await ie(`You are a social media manager for Daily News Uganda.
 Write a DIFFERENT version of a ${e} post for this headline: "${c}"
 Return ONLY a JSON object with one key: { "${e}": "your post here" }
-No explanation. Only the JSON.`),n=JSON.parse(t);g(t=>({...t,[e]:n[e]}))}catch{ne(`Could not regenerate. Please try again.`)}ee(t=>({...t,[e]:!1}))}}function se(e,t){navigator.clipboard.writeText(t),C(t=>({...t,[e]:!0})),setTimeout(()=>C(t=>({...t,[e]:!1})),2e3)}let ce=Object.keys(d).length>0;return(0,f.jsxs)(f.Fragment,{children:[(0,f.jsx)(`style`,{children:h}),(0,f.jsxs)(`div`,{className:`app`,children:[(0,f.jsxs)(`div`,{className:`hdr`,children:[(0,f.jsx)(`div`,{className:`hdr-icon`,children:`📰`}),(0,f.jsxs)(`div`,{children:[(0,f.jsx)(`div`,{className:`hdr-title`,children:`Daily News Uganda`}),(0,f.jsx)(`div`,{className:`hdr-sub`,children:`Social Media Post Generator`})]})]}),(0,f.jsxs)(`div`,{className:`main`,children:[(0,f.jsxs)(`div`,{className:`card`,children:[(0,f.jsxs)(`div`,{className:`step-hdr`,children:[(0,f.jsx)(`div`,{className:`step-num`,children:`🔑`}),(0,f.jsxs)(`div`,{children:[(0,f.jsx)(`div`,{className:`step-title`,children:`Your Google Gemini API Key`}),(0,f.jsx)(`div`,{className:`step-sub`,children:`Free — get yours at aistudio.google.com`})]})]}),(0,f.jsx)(`input`,{className:`api-input`,type:`password`,placeholder:`Paste your Gemini API key here...`,value:e,onChange:e=>re(e.target.value)}),n?(0,f.jsx)(`div`,{className:`api-saved`,children:`✓ Key saved in your browser — no need to paste it again`}):(0,f.jsx)(`div`,{className:`api-hint`,children:`Your key is stored only in this browser. Never shared.`}),(0,f.jsx)(`div`,{className:`gemini-badge`,children:`⚡ Powered by Google Gemini 2.0 Flash — Free`})]}),(0,f.jsxs)(`div`,{className:`card`,children:[(0,f.jsxs)(`div`,{className:`step-hdr`,children:[(0,f.jsx)(`div`,{className:`step-num`,children:`1`}),(0,f.jsxs)(`div`,{children:[(0,f.jsx)(`div`,{className:`step-title`,children:`Choose a Category`}),(0,f.jsx)(`div`,{className:`step-sub`,children:`AI will generate 10 Uganda-focused headlines for you`})]})]}),(0,f.jsx)(`div`,{className:`cats`,children:m.map(e=>(0,f.jsxs)(`button`,{className:`cat${i===e.id?` on`:``}`,onClick:()=>ie(e.id),disabled:_,children:[e.emoji,` `,e.id]},e.id))}),_&&(0,f.jsxs)(`div`,{className:`loading`,style:{marginTop:16},children:[(0,f.jsx)(`div`,{className:`spinner`}),` Generating headlines...`]})]}),o.length>0&&(0,f.jsxs)(`div`,{className:`card`,children:[(0,f.jsxs)(`div`,{className:`step-hdr`,children:[(0,f.jsx)(`div`,{className:`step-num`,children:`2`}),(0,f.jsxs)(`div`,{children:[(0,f.jsx)(`div`,{className:`step-title`,children:`Pick a Headline`}),(0,f.jsx)(`div`,{className:`step-sub`,children:`Click any headline to generate posts for all 4 platforms`})]})]}),(0,f.jsx)(`div`,{className:`headlines`,children:o.map((e,t)=>(0,f.jsxs)(`button`,{className:`hl-btn${c===e?` on`:``}`,onClick:()=>ae(e),disabled:y,children:[(0,f.jsxs)(`span`,{className:`hl-num`,children:[t+1,`.`]}),e]},t))})]}),(y||ce)&&(0,f.jsxs)(`div`,{className:`card`,children:[(0,f.jsxs)(`div`,{className:`step-hdr`,children:[(0,f.jsx)(`div`,{className:`step-num`,children:`3`}),(0,f.jsxs)(`div`,{children:[(0,f.jsx)(`div`,{className:`step-title`,children:`Your Generated Posts`}),(0,f.jsx)(`div`,{className:`step-sub`,children:`Edit if needed · Use ↻ to get a fresh version of any post`})]})]}),(0,f.jsx)(`hr`,{className:`divider`}),y?(0,f.jsxs)(`div`,{className:`loading`,children:[(0,f.jsx)(`div`,{className:`spinner`}),` Writing posts for all 4 platforms...`]}):(0,f.jsx)(`div`,{className:`grid`,children:p.map(e=>{let t=d[e.id]||``,n=t.length>e.limit;return(0,f.jsxs)(`div`,{className:`pcard`,children:[(0,f.jsxs)(`div`,{className:`pcard-hdr`,children:[(0,f.jsx)(`div`,{className:`picon`,style:{background:e.bg},children:e.icon}),(0,f.jsx)(`span`,{className:`pname`,children:e.name}),(0,f.jsxs)(`span`,{className:`pcount${n?` over`:``}`,children:[t.length,`/`,e.limit]})]}),(0,f.jsx)(`textarea`,{className:`pta`,value:t,rows:7,onChange:t=>g(n=>({...n,[e.id]:t.target.value}))}),(0,f.jsxs)(`div`,{className:`wm`,children:[(0,f.jsx)(`span`,{children:`📰`}),(0,f.jsx)(`span`,{children:`Daily News Uganda`})]}),(0,f.jsxs)(`div`,{className:`btn-row`,children:[(0,f.jsx)(`button`,{className:`copy-btn${S[e.id]?` ok`:``}`,onClick:()=>se(e.id,t),children:S[e.id]?`✓ Copied!`:`Copy ${e.label}`}),(0,f.jsx)(`button`,{className:`regen-btn`,onClick:()=>oe(e.id),disabled:x[e.id],title:`Get a different version`,children:x[e.id]?(0,f.jsx)(`span`,{className:`spinner`}):`↻`})]})]},e.id)})})]}),te&&(0,f.jsxs)(`div`,{className:`err-box`,children:[`⚠ `,te]})]})]})]})}(0,u.createRoot)(document.getElementById(`root`)).render((0,f.jsx)(l.StrictMode,{children:(0,f.jsx)(g,{})}));
+No explanation. Only the JSON.`)).match(/\{[\s\S]*\}/);if(!t)throw Error(`No valid JSON found`);let n=JSON.parse(t[0]);_(t=>({...t,[e]:n[e]}))}catch{re(`Could not regenerate. Please try again.`)}S(t=>({...t,[e]:!1}))}}function ce(e,t){navigator.clipboard.writeText(t),te(t=>({...t,[e]:!0})),setTimeout(()=>te(t=>({...t,[e]:!1})),2e3)}let le=Object.keys(d).length>0;return(0,f.jsxs)(f.Fragment,{children:[(0,f.jsx)(`style`,{children:h}),(0,f.jsxs)(`div`,{className:`app`,children:[(0,f.jsxs)(`div`,{className:`hdr`,children:[(0,f.jsx)(`div`,{className:`hdr-icon`,children:`📰`}),(0,f.jsxs)(`div`,{children:[(0,f.jsx)(`div`,{className:`hdr-title`,children:`Daily News Uganda`}),(0,f.jsx)(`div`,{className:`hdr-sub`,children:`Social Media Post Generator`})]})]}),(0,f.jsxs)(`div`,{className:`main`,children:[(0,f.jsxs)(`div`,{className:`card`,children:[(0,f.jsxs)(`div`,{className:`step-hdr`,children:[(0,f.jsx)(`div`,{className:`step-num`,children:`🔑`}),(0,f.jsxs)(`div`,{children:[(0,f.jsx)(`div`,{className:`step-title`,children:`Your OpenRouter API Key`}),(0,f.jsx)(`div`,{className:`step-sub`,children:`Free — get yours at openrouter.ai`})]})]}),(0,f.jsx)(`input`,{className:`api-input`,type:`password`,placeholder:`Paste your OpenRouter key here — sk-or-...`,value:e,onChange:e=>w(e.target.value)}),n?(0,f.jsx)(`div`,{className:`api-saved`,children:`✓ Key saved in your browser — no need to paste it again`}):(0,f.jsx)(`div`,{className:`api-hint`,children:`Your key is stored only in this browser. Never shared.`}),(0,f.jsx)(`div`,{className:`badge`,children:`⚡ Powered by Meta Llama 3.3 70B — Free via OpenRouter`})]}),(0,f.jsxs)(`div`,{className:`card`,children:[(0,f.jsxs)(`div`,{className:`step-hdr`,children:[(0,f.jsx)(`div`,{className:`step-num`,children:`1`}),(0,f.jsxs)(`div`,{children:[(0,f.jsx)(`div`,{className:`step-title`,children:`Choose a Category`}),(0,f.jsx)(`div`,{className:`step-sub`,children:`AI will generate 10 Uganda-focused headlines for you`})]})]}),(0,f.jsx)(`div`,{className:`cats`,children:m.map(e=>(0,f.jsxs)(`button`,{className:`cat${i===e.id?` on`:``}`,onClick:()=>ae(e.id),disabled:v||b,children:[e.emoji,` `,e.id]},e.id))}),v&&(0,f.jsxs)(`div`,{className:`loading`,children:[(0,f.jsx)(`div`,{className:`spinner`}),` Generating headlines...`]})]}),o.length>0&&(0,f.jsxs)(`div`,{className:`card`,children:[(0,f.jsxs)(`div`,{className:`step-hdr`,children:[(0,f.jsx)(`div`,{className:`step-num`,children:`2`}),(0,f.jsxs)(`div`,{children:[(0,f.jsx)(`div`,{className:`step-title`,children:`Pick a Headline`}),(0,f.jsx)(`div`,{className:`step-sub`,children:`Click any headline to generate posts for all 4 platforms`})]})]}),(0,f.jsx)(`div`,{className:`headlines`,children:o.map((e,t)=>(0,f.jsxs)(`button`,{className:`hl-btn${c===e?` on`:``}`,onClick:()=>oe(e),disabled:b,children:[(0,f.jsxs)(`span`,{className:`hl-num`,children:[t+1,`.`]}),e]},t))})]}),(b||le)&&(0,f.jsxs)(`div`,{className:`card`,children:[(0,f.jsxs)(`div`,{className:`step-hdr`,children:[(0,f.jsx)(`div`,{className:`step-num`,children:`3`}),(0,f.jsxs)(`div`,{children:[(0,f.jsx)(`div`,{className:`step-title`,children:`Your Generated Posts`}),(0,f.jsx)(`div`,{className:`step-sub`,children:`Edit if needed · Use ↻ to get a fresh version of any post`})]})]}),(0,f.jsx)(`hr`,{className:`divider`}),b?(0,f.jsxs)(`div`,{className:`loading`,children:[(0,f.jsx)(`div`,{className:`spinner`}),` Writing posts for all 4 platforms...`]}):(0,f.jsx)(`div`,{className:`grid`,children:p.map(e=>{let t=d[e.id]||``,n=t.length>e.limit;return(0,f.jsxs)(`div`,{className:`pcard`,children:[(0,f.jsxs)(`div`,{className:`pcard-hdr`,children:[(0,f.jsx)(`div`,{className:`picon`,style:{background:e.bg},children:e.icon}),(0,f.jsx)(`span`,{className:`pname`,children:e.name}),(0,f.jsxs)(`span`,{className:`pcount${n?` over`:``}`,children:[t.length,`/`,e.limit]})]}),(0,f.jsx)(`textarea`,{className:`pta`,value:t,rows:7,onChange:t=>_(n=>({...n,[e.id]:t.target.value}))}),(0,f.jsxs)(`div`,{className:`wm`,children:[(0,f.jsx)(`span`,{children:`📰`}),(0,f.jsx)(`span`,{children:`Daily News Uganda`})]}),(0,f.jsxs)(`div`,{className:`btn-row`,children:[(0,f.jsx)(`button`,{className:`copy-btn${C[e.id]?` ok`:``}`,onClick:()=>ce(e.id,t),children:C[e.id]?`✓ Copied!`:`Copy ${e.label}`}),(0,f.jsx)(`button`,{className:`regen-btn`,onClick:()=>se(e.id),disabled:ee[e.id],title:`Get a different version`,children:ee[e.id]?(0,f.jsx)(`span`,{className:`spinner`}):`↻`})]})]},e.id)})})]}),ne&&(0,f.jsxs)(`div`,{className:`err-box`,children:[`⚠ `,ne]})]})]})]})}(0,u.createRoot)(document.getElementById(`root`)).render((0,f.jsx)(l.StrictMode,{children:(0,f.jsx)(_,{})}));
