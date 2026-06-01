@@ -31,7 +31,6 @@ const STYLES = `
     padding-bottom: 80px;
   }
 
-  /* HEADER */
   .hdr {
     background: #0f0e0c;
     border-bottom: 2px solid #c8a44a;
@@ -59,10 +58,8 @@ const STYLES = `
     margin-top: 2px;
   }
 
-  /* MAIN */
   .main { max-width: 980px; margin: 0 auto; padding: 28px 18px 0; }
 
-  /* CARD */
   .card {
     background: #18160f;
     border: 1px solid #2a2520;
@@ -71,7 +68,6 @@ const STYLES = `
     margin-bottom: 22px;
   }
 
-  /* STEP HEADER */
   .step-hdr { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
   .step-num {
     width: 28px; height: 28px;
@@ -86,7 +82,6 @@ const STYLES = `
   .step-title { font-size: 14px; font-weight: 600; color: #f0ebe0; }
   .step-sub { font-size: 11px; color: #7a6f5e; margin-top: 2px; }
 
-  /* API KEY */
   .api-input {
     width: 100%;
     background: #0f0e0c;
@@ -103,7 +98,6 @@ const STYLES = `
   .api-hint { font-size: 11px; color: #7a6f5e; margin-top: 7px; }
   .api-saved { font-size: 11px; color: #c8a44a; margin-top: 7px; }
 
-  /* CATEGORIES */
   .cats { display: flex; flex-wrap: wrap; gap: 9px; }
   .cat {
     padding: 8px 16px;
@@ -120,7 +114,6 @@ const STYLES = `
   .cat:hover { border-color: #c8a44a; color: #c8a44a; background: rgba(200,164,74,0.08); }
   .cat.on { border-color: #c8a44a; color: #c8a44a; background: rgba(200,164,74,0.15); font-weight: 600; }
 
-  /* HEADLINES */
   .headlines { display: flex; flex-direction: column; gap: 9px; }
   .hl-btn {
     text-align: left;
@@ -140,7 +133,6 @@ const STYLES = `
   .hl-btn.on { border-color: #c8a44a; background: rgba(200,164,74,0.1); color: #c8a44a; }
   .hl-num { color: #c8a44a; font-weight: 700; flex-shrink: 0; font-size: 12px; margin-top: 1px; }
 
-  /* POSTS GRID */
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
@@ -184,7 +176,6 @@ const STYLES = `
   }
   .pta:focus { border-color: #c8a44a; }
 
-  /* BUTTONS ROW */
   .btn-row { display: flex; gap: 8px; }
   .copy-btn {
     flex: 1;
@@ -215,7 +206,6 @@ const STYLES = `
   .regen-btn:hover:not(:disabled) { border-color: #c8a44a; color: #c8a44a; }
   .regen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  /* LOADING */
   .loading { color: #c8a44a; font-size: 13px; display: flex; align-items: center; gap: 8px; }
   .spinner {
     width: 14px; height: 14px;
@@ -227,7 +217,6 @@ const STYLES = `
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ERROR */
   .err-box {
     background: rgba(231,76,60,0.1);
     border: 1px solid #e74c3c;
@@ -238,17 +227,25 @@ const STYLES = `
     margin-top: 16px;
   }
 
-  /* DIVIDER */
   .divider { border: none; border-top: 1px solid #2a2520; margin: 4px 0 20px; }
 
-  /* WATERMARK */
   .wm {
     display: flex; align-items: center; gap: 6px;
     font-size: 10px; color: #7a6f5e;
     letter-spacing: 1px; text-transform: uppercase;
   }
 
-  /* MOBILE */
+  .gemini-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(66,133,244,0.1);
+    border: 1px solid rgba(66,133,244,0.3);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 10px;
+    color: #4285f4;
+    margin-top: 8px;
+  }
+
   @media (max-width: 600px) {
     .hdr { padding: 12px 16px; }
     .hdr-title { font-size: 16px; }
@@ -260,21 +257,21 @@ const STYLES = `
 `;
 
 export default function App() {
-  const [apiKey, setApiKey]                 = useState("");
-  const [keySaved, setKeySaved]             = useState(false);
-  const [category, setCategory]             = useState(null);
-  const [headlines, setHeadlines]           = useState([]);
-  const [selectedHL, setSelectedHL]         = useState(null);
-  const [posts, setPosts]                   = useState({});
-  const [loadingHL, setLoadingHL]           = useState(false);
-  const [loadingPosts, setLoadingPosts]     = useState(false);
-  const [regenLoading, setRegenLoading]     = useState({});
-  const [copied, setCopied]                 = useState({});
-  const [error, setError]                   = useState("");
+  const [apiKey, setApiKey]             = useState("");
+  const [keySaved, setKeySaved]         = useState(false);
+  const [category, setCategory]         = useState(null);
+  const [headlines, setHeadlines]       = useState([]);
+  const [selectedHL, setSelectedHL]     = useState(null);
+  const [posts, setPosts]               = useState({});
+  const [loadingHL, setLoadingHL]       = useState(false);
+  const [loadingPosts, setLoadingPosts] = useState(false);
+  const [regenLoading, setRegenLoading] = useState({});
+  const [copied, setCopied]             = useState({});
+  const [error, setError]               = useState("");
 
   // Load saved API key from browser on first open
   useEffect(() => {
-    const saved = localStorage.getItem("dnu_api_key");
+    const saved = localStorage.getItem("dnu_gemini_key");
     if (saved) { setApiKey(saved); setKeySaved(true); }
   }, []);
 
@@ -282,39 +279,36 @@ export default function App() {
   function handleKeyChange(val) {
     setApiKey(val);
     if (val.length > 10) {
-      localStorage.setItem("dnu_api_key", val);
+      localStorage.setItem("dnu_gemini_key", val);
       setKeySaved(true);
     } else {
-      localStorage.removeItem("dnu_api_key");
+      localStorage.removeItem("dnu_gemini_key");
       setKeySaved(false);
     }
   }
 
-  // Call Claude API
-  async function callClaude(prompt) {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1500,
-        messages: [{ role: "user", content: prompt }]
-      })
-    });
+  // Call Google Gemini API
+  async function callGemini(prompt) {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.8, maxOutputTokens: 1500 }
+        })
+      }
+    );
     const data = await response.json();
     if (data.error) throw new Error(data.error.message);
-    const text = data.content[0].text;
+    const text = data.candidates[0].content.parts[0].text;
     return text.replace(/```json|```/g, "").trim();
   }
 
   // STEP 1: Generate headlines
   async function fetchHeadlines(cat) {
-    if (!apiKey) { setError("Please enter your Anthropic API key first!"); return; }
+    if (!apiKey) { setError("Please enter your Gemini API key first!"); return; }
     setCategory(cat);
     setHeadlines([]);
     setSelectedHL(null);
@@ -322,17 +316,16 @@ export default function App() {
     setError("");
     setLoadingHL(true);
     try {
-      const raw = await callClaude(
+      const raw = await callGemini(
         `You are a news editor for Daily News Uganda, a Ugandan news website.
 Generate exactly 10 realistic, current-sounding news headlines for the category: ${cat}.
 Headlines must be relevant to Uganda and East Africa.
 Return ONLY a JSON array of 10 strings. No explanation, no numbering, no markdown.
 Example: ["Headline one", "Headline two", ...]`
       );
-      setPosts({});
       setHeadlines(JSON.parse(raw));
     } catch (e) {
-      setError("Could not load headlines. Check your API key and try again.");
+      setError("Could not load headlines. Check your Gemini API key and try again. Error: " + e.message);
     }
     setLoadingHL(false);
   }
@@ -344,7 +337,7 @@ Example: ["Headline one", "Headline two", ...]`
     setError("");
     setLoadingPosts(true);
     try {
-      const raw = await callClaude(
+      const raw = await callGemini(
         `You are a social media manager for Daily News Uganda.
 Write social media posts for this headline: "${headline}"
 Return ONLY a JSON object with exactly these 4 keys:
@@ -358,7 +351,7 @@ No explanation. Only the JSON object.`
       );
       setPosts(JSON.parse(raw));
     } catch (e) {
-      setError("Could not generate posts. Please try again.");
+      setError("Could not generate posts. Please try again. Error: " + e.message);
     }
     setLoadingPosts(false);
   }
@@ -369,7 +362,7 @@ No explanation. Only the JSON object.`
     setRegenLoading(prev => ({ ...prev, [platformId]: true }));
     setError("");
     try {
-      const raw = await callClaude(
+      const raw = await callGemini(
         `You are a social media manager for Daily News Uganda.
 Write a DIFFERENT version of a ${platformId} post for this headline: "${selectedHL}"
 Return ONLY a JSON object with one key: { "${platformId}": "your post here" }
@@ -413,21 +406,22 @@ No explanation. Only the JSON.`
             <div className="step-hdr">
               <div className="step-num">🔑</div>
               <div>
-                <div className="step-title">Your Anthropic API Key</div>
-                <div className="step-sub">Saved automatically in your browser</div>
+                <div className="step-title">Your Google Gemini API Key</div>
+                <div className="step-sub">Free — get yours at aistudio.google.com</div>
               </div>
             </div>
             <input
               className="api-input"
               type="password"
-              placeholder="Paste your API key here — sk-ant-..."
+              placeholder="Paste your Gemini API key here..."
               value={apiKey}
               onChange={e => handleKeyChange(e.target.value)}
             />
             {keySaved
-              ? <div className="api-saved">✓ Key saved in your browser — you won't need to paste it again</div>
-              : <div className="api-hint">Your key is never shared. It's stored only in this browser.</div>
+              ? <div className="api-saved">✓ Key saved in your browser — no need to paste it again</div>
+              : <div className="api-hint">Your key is stored only in this browser. Never shared.</div>
             }
+            <div className="gemini-badge">⚡ Powered by Google Gemini 2.0 Flash — Free</div>
           </div>
 
           {/* STEP 1: CATEGORIES */}
