@@ -18,15 +18,6 @@ const CATEGORIES = [
   { id: "Opinion",     emoji: "✍️" },
 ];
 
-// Free models to try in order — if one fails, next is tried automatically
-const FREE_MODELS = [
-  "meta-llama/llama-3.3-70b-instruct:free",
-  "meta-llama/llama-3.2-3b-instruct:free",
-  "microsoft/phi-3-mini-128k-instruct:free",
-  "qwen/qwen-2-7b-instruct:free",
-  "mistralai/mistral-7b-instruct:free",
-];
-
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@300;400;600&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -78,7 +69,6 @@ const STYLES = `
   .spinner { width: 14px; height: 14px; border: 2px solid #2a2520; border-top-color: #c8a44a; border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; display: inline-block; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .err-box { background: rgba(231,76,60,0.1); border: 1px solid #e74c3c; border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #e74c3c; margin-top: 16px; }
-  .info-box { background: rgba(200,164,74,0.08); border: 1px solid rgba(200,164,74,0.2); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #c8a44a; margin-top: 12px; }
   .divider { border: none; border-top: 1px solid #2a2520; margin: 4px 0 20px; }
   .wm { display: flex; align-items: center; gap: 6px; font-size: 10px; color: #7a6f5e; letter-spacing: 1px; text-transform: uppercase; }
   @media (max-width: 600px) {
@@ -94,7 +84,6 @@ const STYLES = `
 export default function App() {
   const [apiKey, setApiKey]             = useState("");
   const [keySaved, setKeySaved]         = useState(false);
-  const [activeModel, setActiveModel]   = useState(FREE_MODELS[0]);
   const [category, setCategory]         = useState(null);
   const [headlines, setHeadlines]       = useState([]);
   const [selectedHL, setSelectedHL]     = useState(null);
@@ -104,66 +93,46 @@ export default function App() {
   const [regenLoading, setRegenLoading] = useState({});
   const [copied, setCopied]             = useState({});
   const [error, setError]               = useState("");
-  const [statusMsg, setStatusMsg]       = useState("");
 
   useEffect(() => {
-    const saved = localStorage.getItem("dnu_openrouter_key");
+    const saved = localStorage.getItem("dnu_groq_key");
     if (saved) { setApiKey(saved); setKeySaved(true); }
   }, []);
 
   function handleKeyChange(val) {
     setApiKey(val);
     if (val.length > 10) {
-      localStorage.setItem("dnu_openrouter_key", val);
+      localStorage.setItem("dnu_groq_key", val);
       setKeySaved(true);
     } else {
-      localStorage.removeItem("dnu_openrouter_key");
+      localStorage.removeItem("dnu_groq_key");
       setKeySaved(false);
     }
   }
 
-  // Try each free model until one works
-  async function callAI(prompt) {
-    let lastError = "";
-    for (let i = 0; i < FREE_MODELS.length; i++) {
-      const model = FREE_MODELS[i];
-      try {
-        setStatusMsg(`Trying model ${i + 1} of ${FREE_MODELS.length}...`);
-        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`,
-            "HTTP-Referer": "https://dailynewsug.github.io",
-            "X-Title": "Daily News Uganda Social Generator",
-          },
-          body: JSON.stringify({
-            model,
-            messages: [{ role: "user", content: prompt }],
-            temperature: 0.8,
-            max_tokens: 1500,
-          })
-        });
-        const data = await response.json();
-        if (data.error) {
-          lastError = data.error.message;
-          continue; // try next model
-        }
-        const text = data.choices[0].message.content;
-        setActiveModel(model);
-        setStatusMsg("");
-        return text.replace(/```json|```/g, "").trim();
-      } catch (e) {
-        lastError = e.message;
-        continue; // try next model
-      }
-    }
-    setStatusMsg("");
-    throw new Error("All free models are busy. Please try again in a moment. Last error: " + lastError);
+  // Call Groq API — super fast and completely free
+  async function callGroq(prompt) {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.8,
+        max_tokens: 1500,
+      })
+    });
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message);
+    const text = data.choices[0].message.content;
+    return text.replace(/```json|```/g, "").trim();
   }
 
   async function fetchHeadlines(cat) {
-    if (!apiKey) { setError("Please enter your OpenRouter API key first!"); return; }
+    if (!apiKey) { setError("Please enter your Groq API key first!"); return; }
     setCategory(cat);
     setHeadlines([]);
     setSelectedHL(null);
@@ -171,7 +140,7 @@ export default function App() {
     setError("");
     setLoadingHL(true);
     try {
-      const raw = await callAI(
+      const raw = await callGroq(
         `You are a news editor for Daily News Uganda, a Ugandan news website.
 Generate exactly 10 realistic, current-sounding news headlines for the category: ${cat}.
 Headlines must be relevant to Uganda and East Africa.
@@ -179,10 +148,10 @@ Return ONLY a JSON array of 10 strings. No explanation, no numbering, no markdow
 Example: ["Headline one", "Headline two", ...]`
       );
       const match = raw.match(/\[[\s\S]*\]/);
-      if (!match) throw new Error("Could not parse headlines");
+      if (!match) throw new Error("Could not read headlines. Please try again.");
       setHeadlines(JSON.parse(match[0]));
     } catch (e) {
-      setError(e.message);
+      setError("Could not load headlines. Check your Groq API key and try again. Error: " + e.message);
     }
     setLoadingHL(false);
   }
@@ -193,7 +162,7 @@ Example: ["Headline one", "Headline two", ...]`
     setError("");
     setLoadingPosts(true);
     try {
-      const raw = await callAI(
+      const raw = await callGroq(
         `You are a social media manager for Daily News Uganda.
 Write social media posts for this headline: "${headline}"
 Return ONLY a JSON object with exactly these 4 keys:
@@ -206,10 +175,10 @@ Return ONLY a JSON object with exactly these 4 keys:
 No explanation. Only the JSON object.`
       );
       const match = raw.match(/\{[\s\S]*\}/);
-      if (!match) throw new Error("Could not parse posts");
+      if (!match) throw new Error("Could not read posts. Please try again.");
       setPosts(JSON.parse(match[0]));
     } catch (e) {
-      setError(e.message);
+      setError("Could not generate posts. Please try again. Error: " + e.message);
     }
     setLoadingPosts(false);
   }
@@ -219,18 +188,18 @@ No explanation. Only the JSON object.`
     setRegenLoading(prev => ({ ...prev, [platformId]: true }));
     setError("");
     try {
-      const raw = await callAI(
+      const raw = await callGroq(
         `You are a social media manager for Daily News Uganda.
 Write a DIFFERENT version of a ${platformId} post for this headline: "${selectedHL}"
 Return ONLY a JSON object with one key: { "${platformId}": "your post here" }
 No explanation. Only the JSON.`
       );
       const match = raw.match(/\{[\s\S]*\}/);
-      if (!match) throw new Error("Could not parse response");
+      if (!match) throw new Error("Could not read response.");
       const parsed = JSON.parse(match[0]);
       setPosts(prev => ({ ...prev, [platformId]: parsed[platformId] }));
     } catch (e) {
-      setError(e.message);
+      setError("Could not regenerate. Please try again.");
     }
     setRegenLoading(prev => ({ ...prev, [platformId]: false }));
   }
@@ -242,7 +211,6 @@ No explanation. Only the JSON.`
   }
 
   const hasPosts = Object.keys(posts).length > 0;
-  const shortModel = activeModel.split("/")[1]?.split(":")[0] || "Free AI";
 
   return (
     <>
@@ -264,14 +232,14 @@ No explanation. Only the JSON.`
             <div className="step-hdr">
               <div className="step-num">🔑</div>
               <div>
-                <div className="step-title">Your OpenRouter API Key</div>
-                <div className="step-sub">Free — get yours at openrouter.ai</div>
+                <div className="step-title">Your Groq API Key</div>
+                <div className="step-sub">Free — get yours at console.groq.com</div>
               </div>
             </div>
             <input
               className="api-input"
               type="password"
-              placeholder="Paste your OpenRouter key here — sk-or-..."
+              placeholder="Paste your Groq key here — gsk_..."
               value={apiKey}
               onChange={e => handleKeyChange(e.target.value)}
             />
@@ -279,7 +247,7 @@ No explanation. Only the JSON.`
               ? <div className="api-saved">✓ Key saved in your browser — no need to paste it again</div>
               : <div className="api-hint">Your key is stored only in this browser. Never shared.</div>
             }
-            <div className="badge">⚡ {shortModel} — Free via OpenRouter · Auto-switches if busy</div>
+            <div className="badge">⚡ Powered by Llama 3.3 70B via Groq — Free & Fast</div>
           </div>
 
           {/* STEP 1: CATEGORIES */}
@@ -305,8 +273,7 @@ No explanation. Only the JSON.`
             </div>
             {loadingHL && (
               <div className="loading">
-                <div className="spinner"/>
-                {statusMsg || "Generating headlines..."}
+                <div className="spinner"/> Generating headlines...
               </div>
             )}
           </div>
@@ -350,8 +317,7 @@ No explanation. Only the JSON.`
               <hr className="divider"/>
               {loadingPosts ? (
                 <div className="loading">
-                  <div className="spinner"/>
-                  {statusMsg || "Writing posts for all 4 platforms..."}
+                  <div className="spinner"/> Writing posts for all 4 platforms...
                 </div>
               ) : (
                 <div className="grid">
