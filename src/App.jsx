@@ -1,50 +1,44 @@
 import { useState, useEffect } from "react";
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, getDocs, query, where, orderBy, limit } from "firebase/firestore";
 
-const SITE_NAME = "Daily News Uganda";
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyC4U6MWTPKDQZ_oICtSLdfnFP3a-HFILb4",
+  authDomain: "daily-news-a8c64.firebaseapp.com",
+  projectId: "daily-news-a8c64",
+  storageBucket: "daily-news-a8c64.firebasestorage.app",
+  messagingSenderId: "75335342698",
+  appId: "1:75335342698:web:3e65f3d773eca7730b4813"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
+
 const SITE_URL = "https://www.dailynewsug.online";
-
-// RSS feeds your site aggregates from
-const RSS_SOURCES = [
-  "https://www.dailynewsug.online/feed",
-  "https://www.dailynewsug.online/feed/rss",
-  "https://www.monitor.co.ug/feed",
-  "https://nilepost.co.ug/feed",
-  "https://www.newvision.co.ug/feed",
-  "https://chimp.net/feed",
-  "https://www.bbc.com/news/world/africa/rss.xml",
-];
-
-const PROXY = "https://api.allorigins.win/get?url=";
+const SITE_NAME = "Daily News Uganda";
 
 const PLATFORMS = [
-  {
-    id: "twitter", name: "Twitter/X", icon: "𝕏", limit: 280, label: "Tweet", bg: "#000000",
-    share: (text, url) => `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
-  },
-  {
-    id: "facebook", name: "Facebook", icon: "f", limit: 500, label: "Post", bg: "#1877f2",
-    share: (text, url) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`,
-  },
-  {
-    id: "whatsapp", name: "WhatsApp", icon: "✉", limit: 700, label: "Message", bg: "#25d366",
-    share: (text, url) => `https://wa.me/?text=${encodeURIComponent(text + "\n\n" + url)}`,
-  },
-  {
-    id: "instagram", name: "Instagram", icon: "◈", limit: 500, label: "Caption",
+  { id: "twitter",   name: "Twitter/X",  icon: "𝕏", limit: 280, label: "Tweet",   bg: "#000000",
+    share: (text, url) => `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}` },
+  { id: "facebook",  name: "Facebook",   icon: "f",  limit: 500, label: "Post",    bg: "#1877f2",
+    share: (text, url) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}` },
+  { id: "whatsapp",  name: "WhatsApp",   icon: "✉",  limit: 700, label: "Message", bg: "#25d366",
+    share: (text, url) => `https://wa.me/?text=${encodeURIComponent(text + "\n\n" + url)}` },
+  { id: "instagram", name: "Instagram",  icon: "◈",  limit: 500, label: "Caption",
     bg: "linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)",
-    share: () => null,
-  },
+    share: () => null },
 ];
 
 const CATEGORIES = [
-  { id: "Politics", emoji: "🏛️" },
-  { id: "Business", emoji: "💼" },
-  { id: "Sports", emoji: "⚽" },
-  { id: "Technology", emoji: "💻" },
-  { id: "Health", emoji: "🏥" },
-  { id: "Education", emoji: "📚" },
+  { id: "Politics",     emoji: "🏛️" },
+  { id: "Business",    emoji: "💼" },
+  { id: "Sports",      emoji: "⚽" },
+  { id: "Technology",  emoji: "💻" },
+  { id: "Health",      emoji: "🏥" },
+  { id: "Education",   emoji: "📚" },
   { id: "Environment", emoji: "🌿" },
-  { id: "Opinion", emoji: "✍️" },
+  { id: "Opinion",     emoji: "✍️" },
 ];
 
 const STYLES = `
@@ -57,7 +51,7 @@ const STYLES = `
   .hdr-icon { font-size: 28px; }
   .hdr-title { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 900; color: #f0ebe0; line-height: 1.2; }
   .hdr-sub { font-size: 9px; color: #c8a44a; letter-spacing: 2.5px; text-transform: uppercase; margin-top: 2px; }
-  .steps-bar { display: flex; align-items: flex-start; justify-content: center; gap: 0; padding: 14px 18px; background: #18160f; border-bottom: 1px solid #2a2520; }
+  .steps-bar { display: flex; align-items: flex-start; justify-content: center; padding: 14px 18px; background: #18160f; border-bottom: 1px solid #2a2520; }
   .step-dot { width: 28px; height: 28px; border-radius: 50%; background: #2a2520; color: #7a6f5e; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.3s; }
   .step-dot.active { background: #c8a44a; color: #0f0e0c; }
   .step-dot.done { background: rgba(200,164,74,0.3); color: #c8a44a; }
@@ -86,18 +80,19 @@ const STYLES = `
   .hl-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .hl-btn.on { border-color: #c8a44a; background: rgba(200,164,74,0.08); color: #c8a44a; }
   .hl-num { color: #c8a44a; font-weight: 700; flex-shrink: 0; font-size: 13px; margin-top: 1px; min-width: 20px; }
-  .hl-source { font-size: 10px; color: #7a6f5e; margin-top: 4px; }
+  .hl-firebase { font-size: 10px; color: #4caf50; margin-top: 3px; }
+  .hl-ai { font-size: 10px; color: #7a6f5e; margin-top: 3px; }
   .ptabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 16px; scrollbar-width: none; }
   .ptabs::-webkit-scrollbar { display: none; }
   .ptab { flex-shrink: 0; padding: 8px 14px; border-radius: 20px; border: 1px solid #2a2520; background: transparent; color: #7a6f5e; font-size: 13px; font-weight: 600; font-family: 'Source Sans 3', sans-serif; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; -webkit-tap-highlight-color: transparent; }
   .ptab.on { border-color: #c8a44a; background: rgba(200,164,74,0.15); color: #c8a44a; }
   .article-img { width: 100%; height: 200px; object-fit: cover; border-radius: 12px; border: 1px solid #2a2520; display: block; margin-bottom: 14px; }
   .article-img-placeholder { width: 100%; height: 160px; border-radius: 12px; border: 1px solid #2a2520; background: #0f0e0c; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: #7a6f5e; font-size: 12px; margin-bottom: 14px; }
-  .article-img-placeholder span { font-size: 32px; }
   .source-box { background: #0f0e0c; border: 1px solid #2a2520; border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; }
   .source-label { font-size: 10px; color: #7a6f5e; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
   .source-name { font-size: 13px; color: #c8a44a; font-weight: 600; margin-bottom: 4px; }
   .source-link { font-size: 11px; color: #7a6f5e; word-break: break-all; line-height: 1.4; }
+  .firebase-tag { display: inline-flex; align-items: center; gap: 4px; background: rgba(76,175,80,0.1); border: 1px solid rgba(76,175,80,0.3); border-radius: 10px; padding: 2px 8px; font-size: 10px; color: #4caf50; margin-top: 6px; }
   .pcard { background: #0f0e0c; border: 1px solid #2a2520; border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
   .pcard-hdr { display: flex; align-items: center; gap: 10px; }
   .picon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 16px; font-weight: 700; flex-shrink: 0; }
@@ -119,7 +114,7 @@ const STYLES = `
   .ig-note { font-size: 11px; color: #7a6f5e; text-align: center; margin-top: 6px; line-height: 1.5; }
   .action-btn { width: 100%; padding: 16px; border-radius: 12px; border: none; background: #c8a44a; color: #0f0e0c; font-size: 15px; font-weight: 700; font-family: 'Source Sans 3', sans-serif; cursor: pointer; transition: all 0.2s; margin-top: 8px; -webkit-tap-highlight-color: transparent; }
   .action-btn:active { transform: scale(0.98); opacity: 0.9; }
-  .loading { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 32px 0; color: #c8a44a; font-size: 14px; text-align: center; }
+  .loading { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 32px 0; color: #c8a44a; font-size: 14px; text-align: center; line-height: 1.6; }
   .spinner { width: 32px; height: 32px; border: 3px solid #2a2520; border-top-color: #c8a44a; border-radius: 50%; animation: spin 0.7s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .spinner-sm { width: 14px; height: 14px; border: 2px solid #2a2520; border-top-color: #c8a44a; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
@@ -136,63 +131,63 @@ const STYLES = `
 
 const SCREEN = { KEY: "key", CATEGORY: "category", HEADLINES: "headlines", POSTS: "posts" };
 
-// Parse RSS feed and find matching article
-async function findArticleInRSS(feedUrl, headline) {
+// Search Firebase for a real article matching the headline
+async function findFirebaseArticle(headline, category) {
   try {
-    const res = await fetch(`${PROXY}${encodeURIComponent(feedUrl)}`);
-    const data = await res.json();
-    const xml = data.contents || "";
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(xml, "text/xml");
-    const items = Array.from(doc.querySelectorAll("item"));
+    // Try searching by category first
+    const articlesRef = collection(db, "articles");
+    const hlWords = headline.toLowerCase().split(/\s+/).filter(w => w.length > 3);
 
-    // Score each item by how many words match the headline
-    const hlWords = headline.toLowerCase().split(/\s+/);
-    let bestItem = null;
+    // Get recent articles from the same category
+    const q = query(
+      articlesRef,
+      where("category", "==", category),
+      orderBy("publishedAt", "desc"),
+      limit(50)
+    );
+
+    const snapshot = await getDocs(q);
+    let bestDoc = null;
     let bestScore = 0;
 
-    for (const item of items) {
-      const title = (item.querySelector("title")?.textContent || "").toLowerCase();
-      const score = hlWords.filter(w => w.length > 3 && title.includes(w)).length;
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const title = (data.title || data.headline || data.name || "").toLowerCase();
+      const score = hlWords.filter(w => title.includes(w)).length;
       if (score > bestScore) {
         bestScore = score;
-        bestItem = item;
+        bestDoc = { id: doc.id, ...data };
       }
+    });
+
+    // If no good match in category, search all recent articles
+    if (!bestDoc || bestScore < 2) {
+      const qAll = query(articlesRef, orderBy("publishedAt", "desc"), limit(100));
+      const snapAll = await getDocs(qAll);
+      snapAll.forEach(doc => {
+        const data = doc.data();
+        const title = (data.title || data.headline || data.name || "").toLowerCase();
+        const score = hlWords.filter(w => title.includes(w)).length;
+        if (score > bestScore) {
+          bestScore = score;
+          bestDoc = { id: doc.id, ...data };
+        }
+      });
     }
 
-    if (!bestItem || bestScore < 2) return null;
-
-    // Extract image — try media:content, enclosure, or content
-    const mediaContent = bestItem.querySelector("content")?.getAttribute("url")
-      || bestItem.querySelector("[url]")?.getAttribute("url")
-      || bestItem.getElementsByTagNameNS("*", "content")[0]?.getAttribute("url")
-      || bestItem.getElementsByTagNameNS("*", "thumbnail")[0]?.getAttribute("url");
-
-    // Also try to find image in description HTML
-    const desc = bestItem.querySelector("description")?.textContent || "";
-    const descImg = desc.match(/<img[^>]+src=["']([^"']+)["']/i);
-
-    const image = mediaContent || (descImg ? descImg[1] : null);
-    const link = bestItem.querySelector("link")?.textContent?.trim()
-      || bestItem.querySelector("link")?.getAttribute("href") || "";
-    const sourceName = new URL(feedUrl).hostname.replace("www.", "");
-
-    return { image, link, sourceName, score: bestScore };
-  } catch {
+    if (bestDoc && bestScore >= 2) {
+      return {
+        id: bestDoc.id,
+        url: `${SITE_URL}/article.html?id=${bestDoc.id}`,
+        image: bestDoc.image || bestDoc.imageUrl || bestDoc.thumbnail || bestDoc.img || null,
+        title: bestDoc.title || bestDoc.headline || headline,
+      };
+    }
+    return null;
+  } catch (e) {
+    console.error("Firebase search error:", e);
     return null;
   }
-}
-
-// Search all RSS feeds for the best matching article
-async function findArticleFromAllFeeds(headline) {
-  const results = await Promise.allSettled(
-    RSS_SOURCES.map(feed => findArticleInRSS(feed, headline))
-  );
-  const valid = results
-    .filter(r => r.status === "fulfilled" && r.value)
-    .map(r => r.value)
-    .sort((a, b) => b.score - a.score);
-  return valid[0] || null;
 }
 
 export default function App() {
@@ -204,7 +199,7 @@ export default function App() {
   const [selectedHL, setSelectedHL]         = useState(null);
   const [articleUrl, setArticleUrl]         = useState("");
   const [articleImage, setArticleImage]     = useState(null);
-  const [sourceName, setSourceName]         = useState("");
+  const [articleFromFirebase, setArticleFromFirebase] = useState(false);
   const [imageLoading, setImageLoading]     = useState(false);
   const [posts, setPosts]                   = useState({});
   const [activePlatform, setActivePlatform] = useState("twitter");
@@ -251,7 +246,7 @@ export default function App() {
     setPosts({});
     setArticleUrl("");
     setArticleImage(null);
-    setSourceName("");
+    setArticleFromFirebase(false);
     setError("");
     setLoadingHL(true);
     setScreen(SCREEN.HEADLINES);
@@ -277,22 +272,33 @@ Example: ["Headline one", "Headline two", ...]`
     setPosts({});
     setArticleUrl("");
     setArticleImage(null);
-    setSourceName("");
+    setArticleFromFirebase(false);
     setError("");
     setLoadingPosts(true);
     setScreen(SCREEN.POSTS);
     setActivePlatform("twitter");
 
-    // Search RSS feeds for matching article + image
+    // Search Firebase for real article
     setImageLoading(true);
-    setLoadingMsg("Searching source websites for article & image...");
-    const article = await findArticleFromAllFeeds(headline);
-    const finalUrl = `${SITE_URL}/index.html?category=${encodeURIComponent(category)}`;
-    const finalImage = article?.image || null;
-    const finalSource = article?.sourceName || SITE_NAME;
+    setLoadingMsg("Searching your Firebase database for matching article...");
+    const firebaseArticle = await findFirebaseArticle(headline, category);
+
+    let finalUrl, finalImage, isFromFirebase;
+
+    if (firebaseArticle) {
+      finalUrl = firebaseArticle.url;
+      finalImage = firebaseArticle.image;
+      isFromFirebase = true;
+    } else {
+      // Fallback — link to category page
+      finalUrl = `${SITE_URL}/index.html?category=${encodeURIComponent(category)}`;
+      finalImage = null;
+      isFromFirebase = false;
+    }
+
     setArticleUrl(finalUrl);
     setArticleImage(finalImage);
-    setSourceName(finalSource);
+    setArticleFromFirebase(isFromFirebase);
     setImageLoading(false);
 
     // Generate posts
@@ -301,7 +307,6 @@ Example: ["Headline one", "Headline two", ...]`
       const raw = await callGroq(
         `You are a social media manager for ${SITE_NAME} (${SITE_URL}).
 Write social media posts for this headline: "${headline}"
-Original article source: ${finalSource}
 Article link: ${finalUrl}
 
 Return ONLY a JSON object with exactly these 4 keys. Each post MUST include the article link:
@@ -309,7 +314,7 @@ Return ONLY a JSON object with exactly these 4 keys. Each post MUST include the 
   "twitter": "Engaging tweet under 220 chars with 2-3 Uganda hashtags. End with: ${finalUrl}",
   "facebook": "Facebook post under 400 chars with hashtags. End with: Read more ➜ ${finalUrl}",
   "whatsapp": "WhatsApp message under 580 chars, conversational. End with: Full story: ${finalUrl}",
-  "instagram": "Instagram caption under 400 chars with emojis and hashtags. End with the source site name."
+  "instagram": "Instagram caption under 400 chars with emojis and hashtags. End with: Link in bio."
 }
 No explanation. Only the JSON object.`
       );
@@ -394,7 +399,7 @@ Include the link naturally. Return ONLY: { "${platformId}": "post here" }`
 
         <div className="main">
 
-          {/* KEY SCREEN */}
+          {/* KEY */}
           {screen === SCREEN.KEY && (
             <div className="card">
               <div className="card-title">🔑 Groq API Key</div>
@@ -411,7 +416,7 @@ Include the link naturally. Return ONLY: { "${platformId}": "post here" }`
             </div>
           )}
 
-          {/* CATEGORY SCREEN */}
+          {/* CATEGORY */}
           {screen === SCREEN.CATEGORY && (
             <div className="card">
               <div className="card-title">Choose a Category</div>
@@ -429,7 +434,7 @@ Include the link naturally. Return ONLY: { "${platformId}": "post here" }`
             </div>
           )}
 
-          {/* HEADLINES SCREEN */}
+          {/* HEADLINES */}
           {screen === SCREEN.HEADLINES && (
             <div className="card">
               <div className="card-title">{category} Headlines</div>
@@ -458,7 +463,7 @@ Include the link naturally. Return ONLY: { "${platformId}": "post here" }`
             </div>
           )}
 
-          {/* POSTS SCREEN */}
+          {/* POSTS */}
           {screen === SCREEN.POSTS && (
             <div className="card">
               <div className="card-title">Generated Posts</div>
@@ -474,7 +479,7 @@ Include the link naturally. Return ONLY: { "${platformId}": "post here" }`
               {imageLoading ? (
                 <div className="article-img-placeholder">
                   <div className="spinner" style={{ width:24, height:24, borderWidth:2 }}/>
-                  <div>Searching source sites for image...</div>
+                  <div>Searching Firebase for article...</div>
                 </div>
               ) : articleImage ? (
                 <img src={articleImage} alt="Article" className="article-img"
@@ -482,16 +487,19 @@ Include the link naturally. Return ONLY: { "${platformId}": "post here" }`
               ) : (
                 <div className="article-img-placeholder">
                   <span>🖼️</span>
-                  <div>No image found on source sites</div>
+                  <div>No image found for this article</div>
                 </div>
               )}
 
-              {/* Source + link info */}
+              {/* Article link */}
               {articleUrl && (
                 <div className="source-box">
-                  <div className="source-label">Original Source</div>
-                  <div className="source-name">🌐 {sourceName}</div>
+                  <div className="source-label">Article Link</div>
                   <div className="source-link">🔗 {articleUrl}</div>
+                  {articleFromFirebase
+                    ? <div className="firebase-tag">🔥 Matched from your Firebase database</div>
+                    : <div style={{ fontSize:10, color:"#7a6f5e", marginTop:6 }}>⚠ No exact match found — linking to category page</div>
+                  }
                 </div>
               )}
 
@@ -527,15 +535,12 @@ Include the link naturally. Return ONLY: { "${platformId}": "post here" }`
                           {copied[activePlatform] ? "✓ Copied!" : "Copy"}
                         </button>
                         <button className="regen-btn" onClick={() => regenOne(activePlatform)}
-                          disabled={regenLoading[activePlatform]} title="Get a different version">
+                          disabled={regenLoading[activePlatform]}>
                           {regenLoading[activePlatform] ? <span className="spinner-sm"/> : "↻"}
                         </button>
                       </div>
-
-                      {/* SHARE BUTTON */}
                       {activePlatform !== "instagram" ? (
-                        <button className="share-btn"
-                          style={{ background: currentPlatform.bg }}
+                        <button className="share-btn" style={{ background: currentPlatform.bg }}
                           onClick={() => handleShare(currentPlatform)}>
                           {currentPlatform.icon} Share on {currentPlatform.name}
                         </button>
@@ -544,9 +549,7 @@ Include the link naturally. Return ONLY: { "${platformId}": "post here" }`
                           <button className="share-btn ig-share" onClick={() => handleShare(currentPlatform)}>
                             ◈ Copy Caption & Open Instagram
                           </button>
-                          <div className="ig-note">
-                            Caption copied! Just paste it when creating your Instagram post.
-                          </div>
+                          <div className="ig-note">Caption copied! Paste it when creating your Instagram post.</div>
                         </>
                       )}
                     </div>
@@ -559,7 +562,6 @@ Include the link naturally. Return ONLY: { "${platformId}": "post here" }`
                   </button>
                 </>
               )}
-
               {error && <div className="err-box">⚠ {error}</div>}
             </div>
           )}
@@ -569,10 +571,10 @@ Include the link naturally. Return ONLY: { "${platformId}": "post here" }`
         {/* BOTTOM NAV */}
         <div className="bottom-nav">
           {[
-            { s: SCREEN.KEY, icon: "🔑", label: "API Key", disabled: false },
-            { s: SCREEN.CATEGORY, icon: "📂", label: "Category", disabled: false },
+            { s: SCREEN.KEY,       icon: "🔑", label: "API Key",   disabled: false },
+            { s: SCREEN.CATEGORY,  icon: "📂", label: "Category",  disabled: false },
             { s: SCREEN.HEADLINES, icon: "📰", label: "Headlines", disabled: !headlines.length },
-            { s: SCREEN.POSTS, icon: "✍️", label: "Posts", disabled: !selectedHL },
+            { s: SCREEN.POSTS,     icon: "✍️", label: "Posts",     disabled: !selectedHL },
           ].map(n => (
             <button key={n.s} className={`nav-btn${screen === n.s ? " on" : ""}`}
               onClick={() => setScreen(n.s)} disabled={n.disabled}>
