@@ -5,12 +5,13 @@ const SITE_URL = "https://www.dailynewsug.online";
 
 // RSS feeds your site aggregates from
 const RSS_SOURCES = [
+  "https://www.dailynewsug.online/feed",
+  "https://www.dailynewsug.online/feed/rss",
   "https://www.monitor.co.ug/feed",
   "https://nilepost.co.ug/feed",
   "https://www.newvision.co.ug/feed",
   "https://chimp.net/feed",
   "https://www.bbc.com/news/world/africa/rss.xml",
-  "https://allafrica.com/tools/rss2.0/uganda.xml",
 ];
 
 const PROXY = "https://api.allorigins.win/get?url=";
@@ -286,7 +287,7 @@ Example: ["Headline one", "Headline two", ...]`
     setImageLoading(true);
     setLoadingMsg("Searching source websites for article & image...");
     const article = await findArticleFromAllFeeds(headline);
-    const finalUrl = `${SITE_URL}/?s=${encodeURIComponent(headline)}`;
+    const finalUrl = `${SITE_URL}/index.html?category=${encodeURIComponent(category)}`;
     const finalImage = article?.image || null;
     const finalSource = article?.sourceName || SITE_NAME;
     setArticleUrl(finalUrl);
